@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2021-08-31T01:31:57.622497900Z</date>
-  <millis>1630373517622</millis>
-  <nanos>497900</nanos>
+  <date>2021-08-31T04:33:42.446477Z</date>
+  <millis>1630384422446</millis>
+  <nanos>477000</nanos>
   <sequence>0</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
@@ -14,21 +14,21 @@
   <message>Loggers configured with null</message>
 </record>
 <record>
-  <date>2021-08-31T01:31:57.702349800Z</date>
-  <millis>1630373517702</millis>
-  <nanos>349800</nanos>
+  <date>2021-08-31T04:33:42.522648200Z</date>
+  <millis>1630384422522</millis>
+  <nanos>648200</nanos>
   <sequence>1</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>logica.AntenaProblemSolverRunner</class>
   <method>main</method>
   <thread>1</thread>
-  <message>Total execution time: 149ms</message>
+  <message>Total execution time: 272ms</message>
 </record>
 <record>
-  <date>2021-08-31T01:31:57.703346200Z</date>
-  <millis>1630373517703</millis>
-  <nanos>346200</nanos>
+  <date>2021-08-31T04:33:42.523147Z</date>
+  <millis>1630384422523</millis>
+  <nanos>147000</nanos>
   <sequence>2</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
@@ -38,9 +38,9 @@
   <message>Objectives values have been written to file FUN.tsv</message>
 </record>
 <record>
-  <date>2021-08-31T01:31:57.703845300Z</date>
-  <millis>1630373517703</millis>
-  <nanos>845300</nanos>
+  <date>2021-08-31T04:33:42.523635900Z</date>
+  <millis>1630384422523</millis>
+  <nanos>635900</nanos>
   <sequence>3</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
@@ -50,27 +50,27 @@
   <message>Variables values have been written to file VAR.tsv</message>
 </record>
 <record>
-  <date>2021-08-31T01:31:57.704346600Z</date>
-  <millis>1630373517704</millis>
-  <nanos>346600</nanos>
+  <date>2021-08-31T04:33:42.524141200Z</date>
+  <millis>1630384422524</millis>
+  <nanos>141200</nanos>
   <sequence>4</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>logica.AntenaProblemSolverRunner</class>
   <method>main</method>
   <thread>1</thread>
-  <message>Fitness: -36.0</message>
+  <message>Fitness: -50.0</message>
 </record>
 <record>
-  <date>2021-08-31T01:31:57.704843100Z</date>
-  <millis>1630373517704</millis>
-  <nanos>843100</nanos>
+  <date>2021-08-31T04:33:42.524634Z</date>
+  <millis>1630384422524</millis>
+  <nanos>634000</nanos>
   <sequence>5</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>logica.AntenaProblemSolverRunner</class>
   <method>main</method>
   <thread>1</thread>
-  <message>Solution: 111111111111111111111111111111111111</message>
+  <message>Solution: 000000000000000000010010000000010000</message>
 </record>
 </log>

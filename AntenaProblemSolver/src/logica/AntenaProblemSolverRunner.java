@@ -13,7 +13,6 @@ import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.operator.selection.impl.RandomSelection;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
-import org.uma.jmetal.problem.singleobjective.OneMax;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
@@ -32,16 +31,16 @@ public class AntenaProblemSolverRunner {
 
 	    problem = new AntenaProblem() ;
 
-	    crossover = new SinglePointCrossover(0.5);
+	    crossover = new AntenaCrossover(0.9);
 
 	    double mutationProbability = 0.003;
-	    mutation = new BitFlipMutation(mutationProbability) ;
+	    mutation = new AntenaMutator(mutationProbability) ;
 
 	    selection = new BinaryTournamentSelection<BinarySolution>();
-	    selection = new RandomSelection<BinarySolution>();
+	    //selection = new RandomSelection<BinarySolution>();
 	    algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
 	            .setPopulationSize(100)
-	            .setMaxEvaluations(25000)
+	            .setMaxEvaluations(1000)
 	            .setSelectionOperator(selection)
 	            .build() ;
 
