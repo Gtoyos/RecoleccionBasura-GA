@@ -21,6 +21,7 @@ import org.uma.jmetal.util.binarySet.BinarySet;
 public class AntenaProblem extends AbstractBinaryProblem {
 	private int gridH,gridW;
 	Random seed;
+	private List<Integer> populationDensity;
 	
 	//Por defecto se aplica el problema 6x6
 	public AntenaProblem() {
@@ -35,6 +36,19 @@ public class AntenaProblem extends AbstractBinaryProblem {
 	    gridH = filas;
 	    gridW = columnas;
 	    seed = new Random();
+	    
+		populationDensity = new ArrayList<>();
+		try {
+			byte[] buf = Files.readAllBytes(Paths.get("instancias/primera_parte/instancia.in"));
+			for(byte b: buf) {
+				if(b >= 48 && b <=57) {
+					populationDensity.add(b-48);
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("Hubo un problema al cargar la matriz");
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -57,36 +71,27 @@ public class AntenaProblem extends AbstractBinaryProblem {
 		
 		BinarySolution x = new DefaultBinarySolution(getListOfBitsPerVariable(), getNumberOfObjectives());
 		BinarySet b = new BinarySet(gridH*gridW);
-			
 		Set<Integer> p = new HashSet<>();
 		while(p.size() < 3)
 			p.add(seed.nextInt(gridH*gridW));
 		for(Integer i: p)
 			b.set(i);
+		
 		x.setVariable(0, b);
+		//System.out.println("Solucion generada: "+x);
 		return x;
 	}
 
 	/** Evaluate() method */
 	@Override
 	public void evaluate(BinarySolution solution) {
-		List<Integer> populationDensity = new ArrayList<>();
-		try {
-			byte[] buf = Files.readAllBytes(Paths.get("instancias/primera_parte/instancia.in"));
-			for(byte b: buf) {
-				if(b >= 48 && b <=57) {
-					populationDensity.add(b-48);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
 		int [] populationCovered = new int[gridH*gridW];
 	    BitSet bitset = solution.getVariable(0);
-	    int antenas=3;
-	    for (int i = 0; i < bitset.length() && antenas>=0; i++) {
+	    int antena=0;
+	    for (int i = 0; i < 36; i++) {
 	    	if (bitset.get(i)) {
-	    		antenas--;
+	    		antena++;
 	    		populationCovered[i]=1;
 	    		if(!(i%6==0))
 	    			populationCovered[i-1]=1;
@@ -98,15 +103,16 @@ public class AntenaProblem extends AbstractBinaryProblem {
 	    			populationCovered[i+6]=1;
 	    	}
 	    }
+	    
 	    int fitness=0;
-	    for(int i = 0; i < bitset.length(); i++) {
+	    for(int i = 0; i < 36; i++) {
 	    	fitness = fitness + populationCovered[i]*populationDensity.get(i);
 	    }
 
 	    // maximization problem: multiply by -1 to minimize
-	    if(antenas>=0)
-	    	solution.setObjective(0, -1.0 * fitness);
+	    if(antena<=3)
+	    	solution.setObjective(0, -1*fitness);
 	    else
-	    	solution.setObjective(0, -1.0 * 0);
-	  }
+	    	solution.setObjective(0, 0);
+	}
 }
