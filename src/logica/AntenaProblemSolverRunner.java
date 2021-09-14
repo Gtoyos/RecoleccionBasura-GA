@@ -37,9 +37,10 @@ public class AntenaProblemSolverRunner {
 	    	    
 	    problem = new AntenaProblem(filas,columnas,path) ;
 
-	    crossover = new SinglePointCrossover(0.7);
+	    crossover = new SinglePointCrossover(0.6);
 
-	    double mutationProbability = 0.01;
+	    double mutationProbability = 1.0/(filas*columnas)-0.00005;
+	    //double mutationProbability = 0.0008;
 	    mutation = new BitFlipMutation(mutationProbability) ;
 	    
 	    selection = new BinaryTournamentSelection<BinarySolution>();
@@ -78,7 +79,7 @@ public class AntenaProblemSolverRunner {
 	    JMetalLogger.logger.info("Fitness: " + solution.getObjective(0)) ;
 	    JMetalLogger.logger.info("Solution: " + solution.getVariable(0)) ;
 	    
-	    //System.out.println("~Resultados Algoritmo Fuerza Bruta~");
+	    System.out.println("Antenas emplazadas: "+(solution.getObjective(0)+filas*columnas));
 	    //ForzaBruta rt = new ForzaBruta(6,6);
 	    //rt.optimo();
 	  }

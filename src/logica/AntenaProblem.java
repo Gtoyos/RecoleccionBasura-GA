@@ -92,7 +92,7 @@ public class AntenaProblem extends AbstractBinaryProblem {
 	    if(celdas==genteQueViveEnLaMatriz)
 	    	fitness = gridH*gridW - antenas;
 	    else
-	    	fitness = -celdas;
+	    	fitness = -genteQueViveEnLaMatriz+celdas;
 	    
 	
 	    // maximization problem: multiply by -1 to minimize
