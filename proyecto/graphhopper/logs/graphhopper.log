@@ -132,3 +132,249 @@
 2021-11-16 16:43:26.106 [JettyShutdownThread] INFO  o.e.jetty.server.AbstractConnector - Stopped admin@1ad777f{HTTP/1.1, (http/1.1)}{localhost:8990}
 2021-11-16 16:43:26.107 [JettyShutdownThread] INFO  o.e.j.server.handler.ContextHandler - Stopped i.d.j.MutableServletContextHandler@4d62f4c6{/,null,STOPPED}
 2021-11-16 16:43:26.114 [JettyShutdownThread] INFO  o.e.j.server.handler.ContextHandler - Stopped i.d.j.MutableServletContextHandler@4f5f6e45{/,null,STOPPED}
+2021-11-16 16:46:15.392 [main] INFO  org.eclipse.jetty.util.log - Logging initialized @1596ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-11-16 16:46:15.460 [main] INFO  i.d.server.DefaultServerFactory - Registering jersey handler with root path prefix: /
+2021-11-16 16:46:15.462 [main] INFO  i.d.server.DefaultServerFactory - Registering admin handler with root path prefix: /
+2021-11-16 16:46:15.726 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: assets for path /maps/*
+2021-11-16 16:46:15.727 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: webjars for path /webjars/*
+2021-11-16 16:46:15.733 [main] INFO  io.dropwizard.server.ServerFactory - Starting GraphHopperApplication
+                        _     _
+   __ _ _ __ __ _ _ __ | |__ | |__   ___  _ __  _ __   ___ _ __
+  / _` | '__/ _` | '_ \| '_ \| '_ \ / _ \| '_ \| '_ \ / _ \ '__|
+ | (_| | | | (_| | |_) | | | | | | | (_) | |_) | |_) |  __/ |
+  \__, |_|  \__,_| .__/|_| |_|_| |_|\___/| .__/| .__/ \___|_|
+  |___/          |_|                     |_|   |_|
+2021-11-16 16:46:15.815 [main] INFO  o.e.jetty.setuid.SetUIDListener - Opened application@5987e932{HTTP/1.1, (http/1.1)}{localhost:8989}
+2021-11-16 16:46:15.815 [main] INFO  o.e.jetty.setuid.SetUIDListener - Opened admin@1ad777f{HTTP/1.1, (http/1.1)}{localhost:8990}
+2021-11-16 16:46:15.818 [main] INFO  org.eclipse.jetty.server.Server - jetty-9.4.39.v20210325; built: 2021-03-25T14:42:11.471Z; git: 9fc7ca5a922f2a37b84ec9dbc26a5168cee7e667; jvm 1.8.0-292-b10
+2021-11-16 16:46:15.907 [main] INFO  c.g.routing.ch.CHPreparationHandler - Creating CH preparations, totalMB:233, usedMB:65
+2021-11-16 16:46:15.915 [main] INFO  com.graphhopper.GraphHopper - version 4.0|2021-09-29T10:15:32Z (7,20,5,4,5,7)
+2021-11-16 16:46:15.918 [main] INFO  com.graphhopper.GraphHopper - graph CH|car|RAM_STORE|2D|no_turn_cost|7,20,5,4,5, details:edges:162 279(5MB), nodes:137 248(2MB), name:(1MB), geo:193 216(1MB), bounds:13.0732842,13.7635234,52.3330587,52.6796166, shortcuts:104 125 (2MB), nodesCH:137 248 (2MB)
+2021-11-16 16:46:15.919 [main] INFO  c.g.http.GraphHopperManaged - loaded graph at:graph-cache, data_reader_file:uruguay-latest.osm.pbf, encoded values:car_subnetwork|version=288493657|bits=1|index=0|shift=0|store_both_directions=false,roundabout|version=283418129|bits=1|index=0|shift=1|store_both_directions=false,road_class|version=2008526613|bits=5|index=0|shift=2|store_both_directions=false,road_class_link|version=146107020|bits=1|index=0|shift=7|store_both_directions=false,road_environment|version=-444941817|bits=3|index=0|shift=8|store_both_directions=false,max_speed|version=650944097|bits=5|index=0|shift=11|store_both_directions=true,road_access|version=1917521501|bits=4|index=0|shift=21|store_both_directions=false, 1 ints for edge flags, edges:162 279(5MB), nodes:137 248(2MB), name:(1MB), geo:193 216(1MB), bounds:13.0732842,13.7635234,52.3330587,52.6796166, shortcuts:104 125 (2MB), nodesCH:137 248 (2MB)
+2021-11-16 16:46:16.327 [main] WARN  o.g.jersey.internal.inject.Providers - A provider com.codahale.metrics.health.HealthCheckRegistry registered in SERVER runtime does not implement any provider interfaces applicable in the SERVER runtime. Due to constraint configuration problems the provider com.codahale.metrics.health.HealthCheckRegistry will be ignored. 
+2021-11-16 16:46:16.500 [main] INFO  i.d.jersey.DropwizardResourceConfig - The following paths were found for the configured resources:
+
+    GET     / (com.graphhopper.http.resources.RootResource)
+    GET     /health (com.graphhopper.resources.HealthcheckResource)
+    GET     /i18n (com.graphhopper.resources.I18NResource)
+    GET     /i18n/{locale} (com.graphhopper.resources.I18NResource)
+    GET     /info (com.graphhopper.resources.InfoResource)
+    GET     /isochrone (com.graphhopper.resources.IsochroneResource)
+    POST    /match (com.graphhopper.resources.MapMatchingResource)
+    GET     /mvt/{z}/{x}/{y}.mvt (com.graphhopper.resources.MVTResource)
+    GET     /navigate/directions/v5/gh/{profile}/{coordinatesArray : .+} (com.graphhopper.navigation.NavigateResource)
+    GET     /nearest (com.graphhopper.resources.NearestResource)
+    GET     /route (com.graphhopper.resources.RouteResource)
+    POST    /route (com.graphhopper.resources.RouteResource)
+    GET     /spt (com.graphhopper.resources.SPTResource)
+
+2021-11-16 16:46:16.502 [main] INFO  o.e.j.server.handler.ContextHandler - Started i.d.j.MutableServletContextHandler@4f5f6e45{/,null,AVAILABLE}
+2021-11-16 16:46:16.507 [main] INFO  io.dropwizard.setup.AdminEnvironment - tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+2021-11-16 16:46:16.508 [main] INFO  o.e.j.server.handler.ContextHandler - Started i.d.j.MutableServletContextHandler@4d62f4c6{/,null,AVAILABLE}
+2021-11-16 16:46:16.521 [main] INFO  o.e.jetty.server.AbstractConnector - Started application@5987e932{HTTP/1.1, (http/1.1)}{localhost:8989}
+2021-11-16 16:46:16.525 [main] INFO  o.e.jetty.server.AbstractConnector - Started admin@1ad777f{HTTP/1.1, (http/1.1)}{localhost:8990}
+2021-11-16 16:46:16.525 [main] INFO  org.eclipse.jetty.server.Server - Started @2730ms
+2021-11-16 16:46:53.271 [dw-21 - GET /route?point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car] ERROR c.g.resources.RouteResource - point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car 127.0.0.1 en_US Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 [-34.875374,-56.06202, -34.891493,-56.118035], took: 7,0ms, algo: , profile: car, weighting: , vehicle: , errors:[com.graphhopper.util.exceptions.PointOutOfBoundsException: Point 0 is out of bounds: -34.875374,-56.06202, the bounds are: 13.0732842,13.7635234,52.3330587,52.6796166]
+2021-11-16 16:46:53.277 [dw-21 - GET /route?point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car] INFO  c.g.http.MultiExceptionMapper - bad request: [com.graphhopper.util.exceptions.PointOutOfBoundsException: Point 0 is out of bounds: -34.875374,-56.06202, the bounds are: 13.0732842,13.7635234,52.3330587,52.6796166]
+2021-11-16 16:49:22.444 [dw-16 - GET /route?point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car] ERROR c.g.resources.RouteResource - point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car 127.0.0.1 en_US Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 [-34.875374,-56.06202, -34.891493,-56.118035], took: 0,0ms, algo: , profile: car, weighting: , vehicle: , errors:[com.graphhopper.util.exceptions.PointOutOfBoundsException: Point 0 is out of bounds: -34.875374,-56.06202, the bounds are: 13.0732842,13.7635234,52.3330587,52.6796166]
+2021-11-16 16:49:22.444 [dw-16 - GET /route?point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car] INFO  c.g.http.MultiExceptionMapper - bad request: [com.graphhopper.util.exceptions.PointOutOfBoundsException: Point 0 is out of bounds: -34.875374,-56.06202, the bounds are: 13.0732842,13.7635234,52.3330587,52.6796166]
+2021-11-16 16:49:34.145 [dw-30 - GET /route?point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car] ERROR c.g.resources.RouteResource - point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car 127.0.0.1 en_US Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 [-34.875374,-56.06202, -34.891493,-56.118035], took: 0,0ms, algo: , profile: car, weighting: , vehicle: , errors:[com.graphhopper.util.exceptions.PointOutOfBoundsException: Point 0 is out of bounds: -34.875374,-56.06202, the bounds are: 13.0732842,13.7635234,52.3330587,52.6796166]
+2021-11-16 16:49:34.145 [dw-30 - GET /route?point=-34.875374%2C-56.06202&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car] INFO  c.g.http.MultiExceptionMapper - bad request: [com.graphhopper.util.exceptions.PointOutOfBoundsException: Point 0 is out of bounds: -34.875374,-56.06202, the bounds are: 13.0732842,13.7635234,52.3330587,52.6796166]
+2021-11-16 16:49:40.072 [dw-16 - GET /route?point=52.470475%2C13.435206&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car] ERROR c.g.resources.RouteResource - point=52.470475%2C13.435206&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car 127.0.0.1 en_US Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 [52.470475,13.435206, -34.891493,-56.118035], took: 0,0ms, algo: , profile: car, weighting: , vehicle: , errors:[com.graphhopper.util.exceptions.PointOutOfBoundsException: Point 1 is out of bounds: -34.891493,-56.118035, the bounds are: 13.0732842,13.7635234,52.3330587,52.6796166]
+2021-11-16 16:49:40.072 [dw-16 - GET /route?point=52.470475%2C13.435206&point=-34.891493%2C-56.118035&type=json&locale=en-US&key=&elevation=false&profile=car] INFO  c.g.http.MultiExceptionMapper - bad request: [com.graphhopper.util.exceptions.PointOutOfBoundsException: Point 1 is out of bounds: -34.891493,-56.118035, the bounds are: 13.0732842,13.7635234,52.3330587,52.6796166]
+2021-11-16 16:49:43.060 [dw-30 - GET /route?point=52.470475%2C13.435206&point=52.470815%2C13.437717&type=json&locale=en-US&key=&elevation=false&profile=car] INFO  c.g.resources.RouteResource - point=52.470475%2C13.435206&point=52.470815%2C13.437717&type=json&locale=en-US&key=&elevation=false&profile=car 127.0.0.1 en_US Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 [52.470475,13.435206, 52.470815,13.437717], took: 101,0ms, algo: , profile: car, weighting: , vehicle: , alternatives: 1, distance0: 174.18873604025853, weight0: 25.08277798979723, time0: 0min, points0: 2, debugInfo: idLookup:0.0694871s; simplify (5->5);, algoInit:4661 ?s, dijkstrabi|ch-routing:3 ms, path extraction: 679 ?svisited nodes sum: 10
+2021-11-16 16:50:55.762 [main] INFO  org.eclipse.jetty.util.log - Logging initialized @1477ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-11-16 16:50:55.824 [main] INFO  i.d.server.DefaultServerFactory - Registering jersey handler with root path prefix: /
+2021-11-16 16:50:55.825 [main] INFO  i.d.server.DefaultServerFactory - Registering admin handler with root path prefix: /
+2021-11-16 16:50:56.098 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: assets for path /maps/*
+2021-11-16 16:50:56.100 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: webjars for path /webjars/*
+2021-11-16 16:50:56.106 [main] INFO  io.dropwizard.server.ServerFactory - Starting GraphHopperApplication
+                        _     _
+   __ _ _ __ __ _ _ __ | |__ | |__   ___  _ __  _ __   ___ _ __
+  / _` | '__/ _` | '_ \| '_ \| '_ \ / _ \| '_ \| '_ \ / _ \ '__|
+ | (_| | | | (_| | |_) | | | | | | | (_) | |_) | |_) |  __/ |
+  \__, |_|  \__,_| .__/|_| |_|_| |_|\___/| .__/| .__/ \___|_|
+  |___/          |_|                     |_|   |_|
+2021-11-16 16:50:56.202 [main] ERROR io.dropwizard.cli.ServerCommand - Unable to start server, shutting down
+java.lang.RuntimeException: java.io.IOException: Failed to bind to localhost/127.0.0.1:8989
+	at org.eclipse.jetty.setuid.SetUIDListener.lifeCycleStarting(SetUIDListener.java:229)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.setStarting(AbstractLifeCycle.java:205)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:72)
+	at io.dropwizard.cli.ServerCommand.run(ServerCommand.java:53)
+	at io.dropwizard.cli.EnvironmentCommand.run(EnvironmentCommand.java:60)
+	at io.dropwizard.cli.ConfiguredCommand.run(ConfiguredCommand.java:98)
+	at io.dropwizard.cli.Cli.run(Cli.java:78)
+	at io.dropwizard.Application.run(Application.java:94)
+	at com.graphhopper.http.GraphHopperApplication.main(GraphHopperApplication.java:35)
+Caused by: java.io.IOException: Failed to bind to localhost/127.0.0.1:8989
+	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:349)
+	at org.eclipse.jetty.server.ServerConnector.open(ServerConnector.java:310)
+	at org.eclipse.jetty.setuid.SetUIDListener.lifeCycleStarting(SetUIDListener.java:216)
+	... 8 common frames omitted
+Caused by: java.net.BindException: Address already in use: bind
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:461)
+	at sun.nio.ch.Net.bind(Net.java:453)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:222)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:85)
+	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:344)
+	... 10 common frames omitted
+2021-11-16 16:54:43.830 [main] INFO  org.eclipse.jetty.util.log - Logging initialized @1412ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-11-16 16:54:43.897 [main] INFO  i.d.server.DefaultServerFactory - Registering jersey handler with root path prefix: /
+2021-11-16 16:54:43.899 [main] INFO  i.d.server.DefaultServerFactory - Registering admin handler with root path prefix: /
+2021-11-16 16:54:44.147 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: assets for path /maps/*
+2021-11-16 16:54:44.149 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: webjars for path /webjars/*
+2021-11-16 16:54:44.154 [main] INFO  io.dropwizard.server.ServerFactory - Starting GraphHopperApplication
+                        _     _
+   __ _ _ __ __ _ _ __ | |__ | |__   ___  _ __  _ __   ___ _ __
+  / _` | '__/ _` | '_ \| '_ \| '_ \ / _ \| '_ \| '_ \ / _ \ '__|
+ | (_| | | | (_| | |_) | | | | | | | (_) | |_) | |_) |  __/ |
+  \__, |_|  \__,_| .__/|_| |_|_| |_|\___/| .__/| .__/ \___|_|
+  |___/          |_|                     |_|   |_|
+2021-11-16 16:54:44.238 [main] ERROR io.dropwizard.cli.ServerCommand - Unable to start server, shutting down
+java.lang.RuntimeException: java.io.IOException: Failed to bind to localhost/127.0.0.1:8989
+	at org.eclipse.jetty.setuid.SetUIDListener.lifeCycleStarting(SetUIDListener.java:229)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.setStarting(AbstractLifeCycle.java:205)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:72)
+	at io.dropwizard.cli.ServerCommand.run(ServerCommand.java:53)
+	at io.dropwizard.cli.EnvironmentCommand.run(EnvironmentCommand.java:60)
+	at io.dropwizard.cli.ConfiguredCommand.run(ConfiguredCommand.java:98)
+	at io.dropwizard.cli.Cli.run(Cli.java:78)
+	at io.dropwizard.Application.run(Application.java:94)
+	at com.graphhopper.http.GraphHopperApplication.main(GraphHopperApplication.java:35)
+Caused by: java.io.IOException: Failed to bind to localhost/127.0.0.1:8989
+	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:349)
+	at org.eclipse.jetty.server.ServerConnector.open(ServerConnector.java:310)
+	at org.eclipse.jetty.setuid.SetUIDListener.lifeCycleStarting(SetUIDListener.java:216)
+	... 8 common frames omitted
+Caused by: java.net.BindException: Address already in use: bind
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:461)
+	at sun.nio.ch.Net.bind(Net.java:453)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:222)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:85)
+	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:344)
+	... 10 common frames omitted
+2021-11-16 16:55:13.266 [main] INFO  org.eclipse.jetty.util.log - Logging initialized @1424ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-11-16 16:55:13.326 [main] INFO  i.d.server.DefaultServerFactory - Registering jersey handler with root path prefix: /
+2021-11-16 16:55:13.328 [main] INFO  i.d.server.DefaultServerFactory - Registering admin handler with root path prefix: /
+2021-11-16 16:55:13.579 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: assets for path /maps/*
+2021-11-16 16:55:13.580 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: webjars for path /webjars/*
+2021-11-16 16:55:13.586 [main] INFO  io.dropwizard.server.ServerFactory - Starting GraphHopperApplication
+                        _     _
+   __ _ _ __ __ _ _ __ | |__ | |__   ___  _ __  _ __   ___ _ __
+  / _` | '__/ _` | '_ \| '_ \| '_ \ / _ \| '_ \| '_ \ / _ \ '__|
+ | (_| | | | (_| | |_) | | | | | | | (_) | |_) | |_) |  __/ |
+  \__, |_|  \__,_| .__/|_| |_|_| |_|\___/| .__/| .__/ \___|_|
+  |___/          |_|                     |_|   |_|
+2021-11-16 16:55:13.667 [main] ERROR io.dropwizard.cli.ServerCommand - Unable to start server, shutting down
+java.lang.RuntimeException: java.io.IOException: Failed to bind to localhost/127.0.0.1:8989
+	at org.eclipse.jetty.setuid.SetUIDListener.lifeCycleStarting(SetUIDListener.java:229)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.setStarting(AbstractLifeCycle.java:205)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:72)
+	at io.dropwizard.cli.ServerCommand.run(ServerCommand.java:53)
+	at io.dropwizard.cli.EnvironmentCommand.run(EnvironmentCommand.java:60)
+	at io.dropwizard.cli.ConfiguredCommand.run(ConfiguredCommand.java:98)
+	at io.dropwizard.cli.Cli.run(Cli.java:78)
+	at io.dropwizard.Application.run(Application.java:94)
+	at com.graphhopper.http.GraphHopperApplication.main(GraphHopperApplication.java:35)
+Caused by: java.io.IOException: Failed to bind to localhost/127.0.0.1:8989
+	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:349)
+	at org.eclipse.jetty.server.ServerConnector.open(ServerConnector.java:310)
+	at org.eclipse.jetty.setuid.SetUIDListener.lifeCycleStarting(SetUIDListener.java:216)
+	... 8 common frames omitted
+Caused by: java.net.BindException: Address already in use: bind
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:461)
+	at sun.nio.ch.Net.bind(Net.java:453)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:222)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:85)
+	at org.eclipse.jetty.server.ServerConnector.openAcceptChannel(ServerConnector.java:344)
+	... 10 common frames omitted
+2021-11-16 16:56:08.316 [main] INFO  org.eclipse.jetty.util.log - Logging initialized @1429ms to org.eclipse.jetty.util.log.Slf4jLog
+2021-11-16 16:56:08.386 [main] INFO  i.d.server.DefaultServerFactory - Registering jersey handler with root path prefix: /
+2021-11-16 16:56:08.388 [main] INFO  i.d.server.DefaultServerFactory - Registering admin handler with root path prefix: /
+2021-11-16 16:56:08.645 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: assets for path /maps/*
+2021-11-16 16:56:08.646 [main] INFO  io.dropwizard.assets.AssetsBundle - Registering AssetBundle with name: webjars for path /webjars/*
+2021-11-16 16:56:08.652 [main] INFO  io.dropwizard.server.ServerFactory - Starting GraphHopperApplication
+                        _     _
+   __ _ _ __ __ _ _ __ | |__ | |__   ___  _ __  _ __   ___ _ __
+  / _` | '__/ _` | '_ \| '_ \| '_ \ / _ \| '_ \| '_ \ / _ \ '__|
+ | (_| | | | (_| | |_) | | | | | | | (_) | |_) | |_) |  __/ |
+  \__, |_|  \__,_| .__/|_| |_|_| |_|\___/| .__/| .__/ \___|_|
+  |___/          |_|                     |_|   |_|
+2021-11-16 16:56:08.730 [main] INFO  o.e.jetty.setuid.SetUIDListener - Opened application@1db0ec27{HTTP/1.1, (http/1.1)}{localhost:8989}
+2021-11-16 16:56:08.731 [main] INFO  o.e.jetty.setuid.SetUIDListener - Opened admin@3d9fc57a{HTTP/1.1, (http/1.1)}{localhost:8990}
+2021-11-16 16:56:08.734 [main] INFO  org.eclipse.jetty.server.Server - jetty-9.4.39.v20210325; built: 2021-03-25T14:42:11.471Z; git: 9fc7ca5a922f2a37b84ec9dbc26a5168cee7e667; jvm 1.8.0-292-b10
+2021-11-16 16:56:08.757 [main] INFO  com.graphhopper.GraphHopper - version 4.0|2021-09-29T10:15:32Z (7,20,5,4,5,7)
+2021-11-16 16:56:08.760 [main] INFO  com.graphhopper.GraphHopper - graph CH|car|RAM_STORE|2D|no_turn_cost|,,,,, details:edges:0(0MB), nodes:0(0MB), name:(0MB), geo:0(0MB), bounds:1.7976931348623157E308,-1.7976931348623157E308,1.7976931348623157E308,-1.7976931348623157E308, shortcuts:0 (0MB), nodesCH:-1 (0MB)
+2021-11-16 16:56:08.887 [main] INFO  com.graphhopper.GraphHopper - No custom areas are used, custom_areas.directory not given
+2021-11-16 16:56:08.904 [main] INFO  com.graphhopper.GraphHopper - start creating graph from uruguay.osm.pbf
+2021-11-16 16:56:08.919 [main] INFO  com.graphhopper.GraphHopper - using CH|car|RAM_STORE|2D|no_turn_cost|,,,,, memory:totalMB:233, usedMB:82
+2021-11-16 16:56:08.920 [main] INFO  com.graphhopper.reader.osm.OSMReader - Starting to process OSM file: 'uruguay.osm.pbf'
+2021-11-16 16:56:11.054 [main] INFO  com.graphhopper.reader.osm.OSMReader - creating graph. Found nodes (pillar+tower):1 015 711, totalMB:886, usedMB:749
+2021-11-16 16:56:12.477 [main] INFO  com.graphhopper.reader.osm.OSMReader - 3 578 695, now parsing ways
+2021-11-16 16:56:16.593 [main] INFO  com.graphhopper.reader.osm.OSMReader - 3 773 369, now parsing relations
+2021-11-16 16:56:16.596 [main] INFO  com.graphhopper.reader.osm.OSMReader - finished way processing. nodes: 173053, osmIdMap.size:1015801, osmIdMap:12MB, nodeFlagsMap.size:90, relFlagsMap.size:17271, zeroCounter:90 totalMB:1402, usedMB:664
+2021-11-16 16:56:16.596 [main] INFO  com.graphhopper.reader.osm.OSMReader - time pass1:2s, pass2:5s, total:7s
+2021-11-16 16:56:16.599 [main] INFO  c.g.r.s.PrepareRoutingSubnetworks - Start marking subnetworks, prepare.min_network_size: 200, nodes: 173 053, edges: 241 083, jobs: [car_subnetwork|fastest|car], totalMB:1402, usedMB:664
+2021-11-16 16:56:17.256 [main] INFO  c.g.r.s.PrepareRoutingSubnetworks - car - Found 36317 subnetworks (35932 single edges and 385 components with more than one edge, total nodes: 482166), took: 0.65689224s
+2021-11-16 16:56:17.268 [main] INFO  c.g.r.s.PrepareRoutingSubnetworks - car - Marked 36312 subnetworks (biggest: 336 edges) -> 5 components(s) remain (smallest: 427, biggest: 440170 edges), total marked edges: 1712, took: 0.0120972s
+2021-11-16 16:56:17.268 [main] INFO  c.g.r.s.PrepareRoutingSubnetworks - Finished finding and marking subnetworks for 1 jobs, took: 0.6696957s, totalMB:1402, usedMB:699
+2021-11-16 16:56:17.268 [main] INFO  com.graphhopper.GraphHopper - nodes: 173 053, edges: 241 083
+2021-11-16 16:56:17.645 [main] INFO  c.g.storage.index.LocationIndexTree - location index created in 0.37355548s, size:461 537, leafs:163 007, precision:300, depth:6, checksum:69190, entries:[16, 16, 16, 16, 4, 4], entriesPerLeaf:2.8313937
+2021-11-16 16:56:17.645 [main] INFO  c.g.routing.ch.CHPreparationHandler - Creating CH preparations, totalMB:1402, usedMB:867
+2021-11-16 16:56:17.657 [main] INFO  c.g.routing.ch.CHPreparationHandler - 1/1 calling CH prepare.doWork for profile 'car' NODE_BASED ... (totalMB:1402, usedMB:869)
+2021-11-16 16:56:17.659 [car] INFO  c.g.r.c.PrepareContractionHierarchies - Creating CH prepare graph, totalMB:1402, usedMB:873
+2021-11-16 16:56:17.668 [car] INFO  c.g.r.c.PrepareContractionHierarchies - Building CH prepare graph, totalMB:1402, usedMB:873
+2021-11-16 16:56:17.753 [car] INFO  c.g.r.c.PrepareContractionHierarchies - Finished building CH prepare graph, took: 0.085567s, totalMB:1402, usedMB:886
+2021-11-16 16:56:17.762 [car] INFO  c.g.r.c.PrepareContractionHierarchies - Building initial queue of nodes to be contracted: 173053 nodes, totalMB:1402, usedMB:886
+2021-11-16 16:56:17.950 [car] INFO  c.g.r.c.PrepareContractionHierarchies - Finished building queue, took: 0.18806191s, totalMB:1402, usedMB:916
+2021-11-16 16:56:17.952 [car] INFO  c.g.r.c.PrepareContractionHierarchies - node, nodes:    173 053, shortcuts:          0, updates:  0, checked-nodes:          0, t(total):   0.29,  t(period):   0.19, t(lazy):   0.00, t(neighbor):   0.00, t(contr):   0.00, t(other) :   0.10, dijkstra-ratio:  10.96%, meanDegree: 1.00, dijkstras:    896 716, mem:        1MB, totalMB:1402, usedMB:916
+2021-11-16 16:56:18.937 [car] INFO  c.g.r.c.PrepareContractionHierarchies - node, nodes:    138 442, shortcuts:        480, updates:  1, checked-nodes:     34 611, t(total):   1.28,  t(period):   0.98, t(lazy):   0.00, t(neighbor):   0.06, t(contr):   0.10, t(other) :   0.15, dijkstra-ratio:  57.64%, meanDegree: 1.92, dijkstras:  1 683 821, mem:        1MB, totalMB:1402, usedMB:937
+2021-11-16 16:56:19.810 [car] INFO  c.g.r.c.PrepareContractionHierarchies - node, nodes:    103 831, shortcuts:      7 801, updates:  2, checked-nodes:     69 222, t(total):   2.15,  t(period):   1.55, t(lazy):   0.00, t(neighbor):   0.16, t(contr):   0.28, t(other) :   0.17, dijkstra-ratio:  66.06%, meanDegree: 1.79, dijkstras:  2 424 898, mem:        1MB, totalMB:1402, usedMB:959
+2021-11-16 16:56:20.872 [car] INFO  c.g.r.c.PrepareContractionHierarchies - node, nodes:     69 220, shortcuts:     31 733, updates:  3, checked-nodes:    103 833, t(total):   3.21,  t(period):   2.11, t(lazy):   0.00, t(neighbor):   0.35, t(contr):   0.56, t(other) :   0.19, dijkstra-ratio:  70.51%, meanDegree: 2.99, dijkstras:  3 125 323, mem:        1MB, totalMB:1402, usedMB:980
+2021-11-16 16:56:22.636 [car] INFO  c.g.r.c.PrepareContractionHierarchies - node, nodes:     34 609, shortcuts:     87 921, updates:  4, checked-nodes:    138 444, t(total):   4.98,  t(period):   2.80, t(lazy):   0.00, t(neighbor):   0.80, t(contr):   1.14, t(other) :   0.24, dijkstra-ratio:  73.53%, meanDegree: 3.59, dijkstras:  3 840 663, mem:        1MB, totalMB:1402, usedMB:1002
+2021-11-16 16:56:24.752 [car] INFO  c.g.r.c.PrepareContractionHierarchies - node, nodes:      4 380, shortcuts:    203 252, updates:  5, checked-nodes:    173 055, t(total):   7.09,  t(period):   2.95, t(lazy):   0.48, t(neighbor):   1.61, t(contr):   1.78, t(other) :   0.27, dijkstra-ratio:  76.00%, meanDegree: 4.17, dijkstras:  5 092 449, mem:        1MB, totalMB:1402, usedMB:1036
+2021-11-16 16:56:25.355 [car] INFO  c.g.r.c.PrepareContractionHierarchies - node, nodes:          0, shortcuts:    238 923, updates:  5, checked-nodes:    178 728, t(total):   7.70,  t(period):   2.95, t(lazy):   0.65, t(neighbor):   1.91, t(contr):   1.89, t(other) :   0.30, dijkstra-ratio:  76.51%, meanDegree: 1.47, dijkstras:  5 606 229, mem:        1MB, totalMB:1402, usedMB:1045
+2021-11-16 16:56:25.355 [car] INFO  c.g.r.c.PrepareContractionHierarchies - new shortcuts: 238 923, initSize:173 053, fastest|car, periodic:20, lazy:10, neighbor:20, t(total):   7.70,  t(period):   2.95, t(lazy):   0.65, t(neighbor):   1.91, t(contr):   1.89, t(other) :   0.30, dijkstra-ratio:  76.50%, lazy-overhead: 3%, totalMB:1402, usedMB:1045
+2021-11-16 16:56:25.356 [car] INFO  c.g.r.c.PrepareContractionHierarchies - shortcuts that exceed maximum weight: 0
+2021-11-16 16:56:25.356 [car] INFO  c.g.r.c.PrepareContractionHierarchies - took: 7s, graph now - num edges: 241 083, num nodes: 173 053, num shortcuts: 238 923
+2021-11-16 16:56:25.356 [main] INFO  c.g.routing.ch.CHPreparationHandler - Finished CH preparation, totalMB:1402, usedMB:1045
+2021-11-16 16:56:25.357 [main] INFO  com.graphhopper.GraphHopper - flushing graph CH|car|RAM_STORE|2D|no_turn_cost|7,20,5,4,5, details:edges:241 083(8MB), nodes:173 053(2MB), name:(1MB), geo:1 169 492(5MB), bounds:-58.4294213,-53.1996363,-34.9727179,-29.9570035, shortcuts:238 923 (5MB), nodesCH:173 053 (2MB), totalMB:1402, usedMB:1045)
+2021-11-16 16:56:25.421 [main] INFO  com.graphhopper.GraphHopper - flushed graph totalMB:1402, usedMB:1074)
+2021-11-16 16:56:25.423 [main] INFO  c.g.http.GraphHopperManaged - loaded graph at:graph-cache, data_reader_file:uruguay.osm.pbf, encoded values:car_subnetwork|version=288493657|bits=1|index=0|shift=0|store_both_directions=false,roundabout|version=283418129|bits=1|index=0|shift=1|store_both_directions=false,road_class|version=2008526613|bits=5|index=0|shift=2|store_both_directions=false,road_class_link|version=146107020|bits=1|index=0|shift=7|store_both_directions=false,road_environment|version=-444941817|bits=3|index=0|shift=8|store_both_directions=false,max_speed|version=650944097|bits=5|index=0|shift=11|store_both_directions=true,road_access|version=1917521501|bits=4|index=0|shift=21|store_both_directions=false, 1 ints for edge flags, edges:241 083(8MB), nodes:173 053(2MB), name:(1MB), geo:1 169 492(5MB), bounds:-58.4294213,-53.1996363,-34.9727179,-29.9570035, shortcuts:238 923 (5MB), nodesCH:173 053 (2MB)
+2021-11-16 16:56:25.806 [main] WARN  o.g.jersey.internal.inject.Providers - A provider com.codahale.metrics.health.HealthCheckRegistry registered in SERVER runtime does not implement any provider interfaces applicable in the SERVER runtime. Due to constraint configuration problems the provider com.codahale.metrics.health.HealthCheckRegistry will be ignored. 
+2021-11-16 16:56:26.050 [main] INFO  i.d.jersey.DropwizardResourceConfig - The following paths were found for the configured resources:
+
+    GET     / (com.graphhopper.http.resources.RootResource)
+    GET     /health (com.graphhopper.resources.HealthcheckResource)
+    GET     /i18n (com.graphhopper.resources.I18NResource)
+    GET     /i18n/{locale} (com.graphhopper.resources.I18NResource)
+    GET     /info (com.graphhopper.resources.InfoResource)
+    GET     /isochrone (com.graphhopper.resources.IsochroneResource)
+    POST    /match (com.graphhopper.resources.MapMatchingResource)
+    GET     /mvt/{z}/{x}/{y}.mvt (com.graphhopper.resources.MVTResource)
+    GET     /navigate/directions/v5/gh/{profile}/{coordinatesArray : .+} (com.graphhopper.navigation.NavigateResource)
+    GET     /nearest (com.graphhopper.resources.NearestResource)
+    GET     /route (com.graphhopper.resources.RouteResource)
+    POST    /route (com.graphhopper.resources.RouteResource)
+    GET     /spt (com.graphhopper.resources.SPTResource)
+
+2021-11-16 16:56:26.052 [main] INFO  o.e.j.server.handler.ContextHandler - Started i.d.j.MutableServletContextHandler@79fd6f95{/,null,AVAILABLE}
+2021-11-16 16:56:26.056 [main] INFO  io.dropwizard.setup.AdminEnvironment - tasks = 
+
+    POST    /tasks/log-level (io.dropwizard.servlets.tasks.LogConfigurationTask)
+    POST    /tasks/gc (io.dropwizard.servlets.tasks.GarbageCollectionTask)
+
+2021-11-16 16:56:26.057 [main] INFO  o.e.j.server.handler.ContextHandler - Started i.d.j.MutableServletContextHandler@24e83d19{/,null,AVAILABLE}
+2021-11-16 16:56:26.074 [main] INFO  o.e.jetty.server.AbstractConnector - Started application@1db0ec27{HTTP/1.1, (http/1.1)}{localhost:8989}
+2021-11-16 16:56:26.079 [main] INFO  o.e.jetty.server.AbstractConnector - Started admin@3d9fc57a{HTTP/1.1, (http/1.1)}{localhost:8990}
+2021-11-16 16:56:26.079 [main] INFO  org.eclipse.jetty.server.Server - Started @19194ms
+2021-11-16 16:56:47.951 [dw-15 - GET /route?point=-34.888765%2C-56.124065&point=-34.89269%2C-56.109624&type=json&locale=en-US&key=&elevation=false&profile=car] INFO  c.g.resources.RouteResource - point=-34.888765%2C-56.124065&point=-34.89269%2C-56.109624&type=json&locale=en-US&key=&elevation=false&profile=car 127.0.0.1 en_US Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 [-34.888765,-56.124065, -34.89269,-56.109624], took: 72,0ms, algo: , profile: car, weighting: , vehicle: , alternatives: 1, distance0: 1691.5714504100113, weight0: 157.0345153540137, time0: 3min, points0: 21, debugInfo: idLookup:0.0085893s; simplify (28->28);, algoInit:6010 ?s, dijkstrabi|ch-routing:13 ms, path extraction: 1090 ?svisited nodes sum: 88
+2021-11-16 16:56:57.487 [dw-37 - GET /route?point=-34.888765%2C-56.124065&point=-34.891246%2C-56.108358&type=json&locale=en-US&key=&elevation=false&profile=car] INFO  c.g.resources.RouteResource - point=-34.888765%2C-56.124065&point=-34.891246%2C-56.108358&type=json&locale=en-US&key=&elevation=false&profile=car 127.0.0.1 en_US Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 [-34.888765,-56.124065, -34.891246,-56.108358], took: 7,0ms, algo: , profile: car, weighting: , vehicle: , alternatives: 1, distance0: 1638.7518136377578, weight0: 147.48743322739818, time0: 2min, points0: 18, debugInfo: idLookup:0.0011774s; simplify (24->24);, algoInit:65 ?s, dijkstrabi|ch-routing:3 ms, path extraction: 164 ?svisited nodes sum: 82
+2021-11-16 16:57:05.338 [dw-19 - GET /route?point=-34.888765,-56.124065&point=-34.891246,-56.108358&type=json&locale=en-US&key=&elevation=false&profile=car] INFO  c.g.resources.RouteResource - point=-34.888765,-56.124065&point=-34.891246,-56.108358&type=json&locale=en-US&key=&elevation=false&profile=car 127.0.0.1 en_US Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 [-34.888765,-56.124065, -34.891246,-56.108358], took: 3,0ms, algo: , profile: car, weighting: , vehicle: , alternatives: 1, distance0: 1638.7518136377578, weight0: 147.48743322739818, time0: 2min, points0: 18, debugInfo: idLookup:5.034E-4s; simplify (24->24);, algoInit:43 ?s, dijkstrabi|ch-routing:1 ms, path extraction: 115 ?svisited nodes sum: 82
