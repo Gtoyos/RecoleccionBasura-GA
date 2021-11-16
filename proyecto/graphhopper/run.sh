@@ -1,0 +1,1 @@
+java -Ddw.graphhopper.datareader.file=uruguay-latest.osm.pbf -jar *.jar server config-example.yml
