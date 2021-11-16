@@ -1,0 +1,19 @@
+Estructura de: Estado de la Recoleccion.
+ 
+ Campo                      Tipo	    Observaciones
+ -------------------------- --------------- ----------------------------------------------------------------
+ id_viaje		    Numero	    Identificador del viaje.
+ dia			    Fecha	    Dia que se realiza el viaje.
+ cod_recorrido		    Texto	    Codigo del circuito de recoleccion.
+ posicion		    Numero	    Posicion de un punto (contenedor) en el recorrido.
+ hora_prevista_salida	    Fecha	    Fecha y hora prevista de salida del viaje.
+ hora_prevista_llegada      Fecha           Fecha y hora prevista de llegada del viaje.
+ gid			    Numero	    Clave del punto de ubicacion del contenedor.	
+ levantado		    Texto	    Indica si un contenedor fue levantado (Si) o si no lo fue (No).
+
+
+
+ CSV que indica el estado de cada contenedor, si fue levantado o no, detallando a que recorrido pertenece y la posicion que ocupa dentro del mismo.
+ Un viaje puede tener varios tramos de distintos recorridos.
+ La informacion pertenece a viajes Finalizados.
+ 

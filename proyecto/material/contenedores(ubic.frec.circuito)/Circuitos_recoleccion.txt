@@ -1,0 +1,11 @@
+
+ Estructura de: Circuitos de Recolección
+ 
+ Campo                      Tipo            Observaciones
+ -------------------------- --------------- ----------------------------------------------------------------
+ gid                        Número          Clave del polígono
+ cod_circuito               Texto           Código del circuito de recolección
+ municipio                  Texto           Nombre del Municipio correspondiente (A-G)
+ vertices                   Lista de puntos Coordenadas de los puntos del polígono del circuito
+
+ Un circuito de recolección puede tener varios polígonos asociados.

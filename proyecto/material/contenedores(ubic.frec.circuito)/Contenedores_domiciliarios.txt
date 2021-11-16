@@ -1,0 +1,13 @@
+
+ Estructura de: Contenedores domiciliarios
+ 
+ Campo                      Tipo            Observaciones
+ -------------------------- --------------- ------------------------------------------------------------------------
+ gid                        Número          Clave del punto de ubicación del contenedor
+ cod_circuito               Texto           Código del circuito de recolección al que pertenece el contenedor
+                                            (ver circuitos_recolección.txt)
+ turno_horario              Texto           Días de la semana y turno en el día en que está planificado recolectarlo
+ x                          Número          Coordenada x de la ubicación del contenedor
+ y                          Número          Coordenada y de la ubicación del contenedor
+ 
+ 

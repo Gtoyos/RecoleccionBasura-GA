@@ -1,0 +1,12 @@
+Estructura de: Viajes por día, tipo de servicio y trayecto
+ 
+ Campo                      Tipo	    Observaciones
+ -------------------------- --------------- ----------------------------------------------------------------
+ dia                       Fecha	    Día que se realizaron los viajes.
+ tipo_servicio             Número	    Código del tipo de servicio de los viajes realizados.
+ trayecto                  Número          Código del trayecto al que corresponden los viajes.
+ peso_neto                 Número          Peso total de los residuos recolectados en los viajes.
+ cant_viajes               Número          Cantidad total de viajes realizados en ese día, para ese trayecto y de ese tipo.
+
+
+
