@@ -1,4 +1,4 @@
-
+﻿
  Estructura de: Contenedores domiciliarios
  
  Campo                      Tipo            Observaciones
@@ -11,3 +11,5 @@
  y                          Número          Coordenada y de la ubicación del contenedor
  
  
+
+El Sistema de Referencia de las coordenadas definidas en los datos es SIRGAS2000 ITRF2000, proyección UTM 21S.
