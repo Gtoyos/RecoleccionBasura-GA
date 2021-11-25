@@ -6,8 +6,9 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-algorithm"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-problem"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmetal-algorithm"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsprit-core"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
