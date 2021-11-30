@@ -31,7 +31,7 @@ public class TSPSolver {
 	public final float COSTO_POR_TIEMPO = 0.001f; // Costo por segundo de transporte (En milisegundos)
 	public final int COSTO_FIJO = 100; //Costo fijo por utilizar el camion
 	public final double MAX_TIME = 2880000000.0*1000; //8hs (En ms)
-	public final double TIEMPOXCONTENEDOR = 60*3; //Tiempo que se permanece en cada contenedor.
+	public final double TIEMPOXCONTENEDOR = 60*3*1000; //Tiempo que se permanece en cada contenedor (en ms).
 	public final Location felipe_cardozo =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(-56.0982134,-34.8504341))
 			.setId("startpoint").build();
 	private VehicleImpl camion;

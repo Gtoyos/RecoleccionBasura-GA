@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2021-11-30T14:20:52.216093700Z</date>
+  <millis>1638282052216</millis>
+  <nanos>93700</nanos>
+  <sequence>0</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>INFO</level>
+  <class>org.uma.jmetal.util.JMetalLogger</class>
+  <method>configureLoggers</method>
+  <thread>1</thread>
+  <message>Loggers configured with null</message>
+</record>
+<record>
+  <date>2021-11-30T14:20:52.235968200Z</date>
+  <millis>1638282052235</millis>
+  <nanos>968200</nanos>
+  <sequence>1</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>INFO</level>
+  <class>main.Main</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Total execution time: 13860ms</message>
+</record>
+<record>
+  <date>2021-11-30T14:20:52.236968Z</date>
+  <millis>1638282052236</millis>
+  <nanos>968000</nanos>
+  <sequence>2</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>INFO</level>
+  <class>main.Main</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Objectives values have been written to file FUN.tsv</message>
+</record>
+<record>
+  <date>2021-11-30T14:20:52.236968Z</date>
+  <millis>1638282052236</millis>
+  <nanos>968000</nanos>
+  <sequence>3</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>INFO</level>
+  <class>main.Main</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Variables values have been written to file VAR.tsv</message>
+</record>
+<record>
+  <date>2021-11-30T14:20:52.236968Z</date>
+  <millis>1638282052236</millis>
+  <nanos>968000</nanos>
+  <sequence>4</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>INFO</level>
+  <class>main.Main</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Fitness: -445520.0</message>
+</record>
+<record>
+  <date>2021-11-30T14:20:52.237966900Z</date>
+  <millis>1638282052237</millis>
+  <nanos>966900</nanos>
+  <sequence>5</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>INFO</level>
+  <class>main.Main</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Solution: 
+Dia 1
+0000001000	1001000100
+0000000000	0010000000
+0000000000	1000000000
+0000000000	0100000000
+0000100000	0000000000
+
+Dia 2
+1001000100	0000000000
+0010000000	0000000000
+1000000000	0000000000
+0100000000	0000000000
+0000000000	0000001000
+
+</message>
+</record>
+</log>
