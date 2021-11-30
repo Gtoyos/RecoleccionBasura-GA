@@ -13,14 +13,15 @@ import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
+import org.uma.jmetal.util.evaluator.impl.MultithreadedSolutionListEvaluator;
 
 
 public class BasuraAlgorithm {
 	private String instanceFolder;
 	private int [] estadoInicial;
-	private int cantidadCamiones=5,
+	private int cantidadCamiones=100,
 			populationSize=100,
-			maxEvaluations=10000;
+			maxEvaluations=100000;
 	
 	public BasuraAlgorithm(String instanceFolder, int [] estadoInicial) {
 		this.instanceFolder = instanceFolder;
@@ -34,12 +35,23 @@ public class BasuraAlgorithm {
 	    MutationOperator<BinarySolution> mutation = new BitFlipMutation(0.0008);
 	    SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<BinarySolution>();
 	    
-	    Algorithm<BinarySolution> algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
-	            .setPopulationSize(populationSize)
-	            .setMaxEvaluations(maxEvaluations)
-	            .setSelectionOperator(selection)
-	            .build();
+	    //Algorithm<BinarySolution> algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
+	      //      .setPopulationSize(populationSize)
+	        //    .setMaxEvaluations(maxEvaluations)
+	          //  .setSelectionOperator(selection)
+	            //.build();
 
+	    GeneticAlgorithmBuilder<BinarySolution> builder =
+	            new GeneticAlgorithmBuilder<BinarySolution>(problem, crossover, mutation)
+	                .setPopulationSize(populationSize)
+	                .setMaxEvaluations(maxEvaluations)
+	                .setSelectionOperator(selection)
+	                .setSolutionListEvaluator(
+	                    new MultithreadedSolutionListEvaluator<BinarySolution>(16));
+
+	    Algorithm<BinarySolution> algorithm = builder.build();	    
+	    
+	    
 	    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
 	    return ((Itinerario) algorithm.getResult().getVariable(0))
 	    		.setFitness(algorithm.getResult().getObjective(0))

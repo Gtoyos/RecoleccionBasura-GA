@@ -5,3 +5,5 @@ proyecto/graphhopper/logs/graphhopper-2021-11-18.log.gz
 proyecto/graphhopper/logs/graphhopper.log
 
 *.csv
+*.log
+proyecto/jMetal.log

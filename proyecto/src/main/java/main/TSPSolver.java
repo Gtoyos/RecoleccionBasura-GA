@@ -1,7 +1,15 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.IntStream;
 
 import com.graphhopper.jsprit.analysis.toolbox.GraphStreamViewer;
 import com.graphhopper.jsprit.analysis.toolbox.Plotter;
@@ -27,14 +35,15 @@ import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 public class TSPSolver {
 	public final int CAPACIDAD_MAXIMA = 200; //Cantidad maxima de residuos que se pueden levantar.
-	public final int COSTO_POR_DISTANCIA = 2; //Costo por metro recorrido
-	public final float COSTO_POR_TIEMPO = 0.001f; // Costo por segundo de transporte (En milisegundos)
-	public final int COSTO_FIJO = 100; //Costo fijo por utilizar el camion
+	public final int COSTO_POR_DISTANCIA = 1; //Costo por metro recorrido
+	public final float COSTO_POR_TIEMPO = 0;//00.001f; // Costo por segundo de transporte (En milisegundos)
+	public final int COSTO_FIJO = 0;//100; //Costo fijo por utilizar el camion
 	public final double MAX_TIME = 2880000000.0*1000; //8hs (En ms)
 	public final double TIEMPOXCONTENEDOR = 60*3*1000; //Tiempo que se permanece en cada contenedor (en ms).
 	public final Location felipe_cardozo =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(-56.0982134,-34.8504341))
 			.setId("startpoint").build();
 	private VehicleImpl camion;
+	private VehicleRoutingTransportCosts costMatrix;
 	private Location startpoint = felipe_cardozo;
 	private float [][] tiempo;
 	private float [][] distancia;
@@ -43,6 +52,18 @@ public class TSPSolver {
 	private float [] tiempoFromStartpoint;
 	private float [] distanciaToStartpoint;
 	private float [] distanciaFromStartpoint;
+	
+	private class DtSol{
+		public int [] index;
+		public float [] sol;
+		public DtSol(int [] i, float [] s) {
+			index = i;
+			sol = s;
+		}
+	}
+	
+	private Map<Integer,List<DtSol>> cache = new HashMap<Integer,List<DtSol>>();
+	
 	TSPSolver(){
 		VehicleTypeImpl.Builder templateCamionDeBasura = VehicleTypeImpl.Builder.newInstance("camionDeBasuraA01")
 				.addCapacityDimension(0, CAPACIDAD_MAXIMA)
@@ -70,21 +91,14 @@ public class TSPSolver {
      * @return retorna float[] donde la primer entrada es la distancia recorrida en metros del recorrido y la segunda entrada es el tiempo empleado para hacerlo
      */
 	public float [] solve(int [] indiceContenedores,boolean plotResults){
-
-        VehicleRoutingTransportCostsMatrix.Builder costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(false);
-        for (int i=0; i<indiceContenedores.length; i++)
-        	for (int j=0; j<indiceContenedores.length; j++) {
-        		costMatrixBuilder.addTransportDistance(String.valueOf(i), String.valueOf(j), distancia[indiceContenedores[i]][indiceContenedores[j]]);
-        		costMatrixBuilder.addTransportTime(String.valueOf(i), String.valueOf(j), tiempo[indiceContenedores[i]][indiceContenedores[j]]);
-        	}
-        for (int i=0; i<indiceContenedores.length; i++) {
-    		costMatrixBuilder.addTransportDistance(String.valueOf(i), "startpoint", distanciaToStartpoint[indiceContenedores[i]]);
-    		costMatrixBuilder.addTransportDistance("startpoint", String.valueOf(i), distanciaFromStartpoint[indiceContenedores[i]]);
-    		costMatrixBuilder.addTransportTime("startpoint", String.valueOf(i), tiempoFromStartpoint[indiceContenedores[i]]);
-    		costMatrixBuilder.addTransportTime(String.valueOf(i), "startpoint", tiempoToStartpoint[indiceContenedores[i]]);
-        }
-
-        VehicleRoutingTransportCosts costMatrix = costMatrixBuilder.build();
+		int hash = Arrays.hashCode(indiceContenedores);
+		if(cache.containsKey(hash)) {
+			for(DtSol s : cache.get(hash)) {
+				if(Arrays.equals(s.index,indiceContenedores)) {
+					return s.sol;
+				}
+			}
+		}
 		
 		VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance()
 				.addVehicle(camion)
@@ -108,7 +122,8 @@ public class TSPSolver {
 			new GraphStreamViewer(problem, bestSolution).setRenderDelay(100).display();
 			new Plotter(problem,bestSolution).plot("solution.png", "solution");
 		}
-
+		
+		/*
 		float tDistance=0,tTime=0;
 		for(VehicleRoute route : bestSolution.getRoutes()) {
 			Iterator<TourActivity> it = route.getActivities().iterator();
@@ -126,6 +141,15 @@ public class TSPSolver {
 		}
 		
 		float [] result = {tDistance,tTime};
+		*/
+		float [] result = {(float) bestSolution.getCost(),(float) bestSolution.getRoutes().iterator().next().getEnd().getArrTime()};
+		if(cache.containsKey(hash))
+			cache.get(hash).add(new DtSol(indiceContenedores,result));
+		else {
+			List<DtSol> l = new ArrayList<>();
+			l.add(new DtSol(indiceContenedores,result));
+			cache.put(hash, l);
+		}
 		return result;
 	}
 	
@@ -170,7 +194,22 @@ public class TSPSolver {
 	
 	
 	
-	
+	public TSPSolver buildcostMatrix() {
+        VehicleRoutingTransportCostsMatrix.Builder costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(false);
+        for (int i=0; i<tiempo.length; i++)
+        	for (int j=0; j<tiempo.length; j++) {
+        		costMatrixBuilder.addTransportDistance(String.valueOf(i), String.valueOf(j), distancia[i][j]);
+        		costMatrixBuilder.addTransportTime(String.valueOf(i), String.valueOf(j), tiempo[i][j]);
+        	}
+        for (int i=0; i<tiempo.length; i++) {
+    		costMatrixBuilder.addTransportDistance(String.valueOf(i), "startpoint", distanciaToStartpoint[i]);
+    		costMatrixBuilder.addTransportDistance("startpoint", String.valueOf(i), distanciaFromStartpoint[i]);
+    		costMatrixBuilder.addTransportTime("startpoint", String.valueOf(i), tiempoFromStartpoint[i]);
+    		costMatrixBuilder.addTransportTime(String.valueOf(i), "startpoint", tiempoToStartpoint[i]);
+        }
+        costMatrix = costMatrixBuilder.build();
+		return this;
+	}
 	
 	public static void main(String[] args) {
 		simpleExample();

@@ -36,6 +36,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			problemaTSP.setTiempotoStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoHaciaStartpoint.csv")[0]);
 			problemaTSP.setDistanciaFromStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaDesdeStartpoint.csv")[0]);
 			problemaTSP.setDistanciatoStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaHaciaStartpoint.csv")[0]);
+			problemaTSP.buildcostMatrix();
 		long endTime = System.nanoTime();
 		System.out.println("DONE ["+(endTime - startTime)/1000000/1000.0+" s]");
 	    } catch(IOException e) {
@@ -116,8 +117,8 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			int [] lev = ((Itinerario) solution.getVariable(0)).getContenedoresLevantadosEnElDia(i);
 			for(int j=0; j<cantidadContenedores; j++) {
 				state[j] = ((lev[j]==1) ? 0: state[j]);
-				if(state[j]>diasMaxSinLevantar)
-					desbordados+=state[j]-diasMaxSinLevantar;	
+				if(state[j]>=diasMaxSinLevantar)
+					desbordados+=state[j]-diasMaxSinLevantar+1;	
 			}
 		}
 		return desbordados;
