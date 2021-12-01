@@ -27,7 +27,7 @@ public class Itinerario extends BinarySet{
 	public int[] getContenedores(int camion, int dia, int turno) {
 		int [] res = new int[cantContenedores];
 		for(int i=0; i<cantContenedores; i++) {
-			res[i] = this.get((dia+turno)*cantCamiones*cantContenedores + i) ? 1:0;
+			res[i] = this.get((dia+turno)*cantCamiones*cantContenedores + camion*cantContenedores + i) ? 1:0;
 		}
 		return res;
 	}

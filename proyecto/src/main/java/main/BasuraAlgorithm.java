@@ -2,24 +2,34 @@ package main;
 
 import java.util.List;
 
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder;
 import org.uma.jmetal.example.AlgorithmRunner;
+import org.uma.jmetal.experimental.componentbasedalgorithm.catalogue.replacement.Replacement;
+import org.uma.jmetal.experimental.componentbasedalgorithm.catalogue.replacement.impl.MuPlusLambdaReplacement;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.crossover.impl.SinglePointCrossover;
 import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
 import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
+import org.uma.jmetal.parallel.asynchronous.algorithm.impl.AsynchronousMultiThreadedGeneticAlgorithm;
+import org.uma.jmetal.parallel.synchronous.SparkSolutionListEvaluator;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
-import org.uma.jmetal.util.evaluator.impl.MultithreadedSolutionListEvaluator;
+import org.uma.jmetal.util.comparator.ObjectiveComparator;
+import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
+import org.uma.jmetal.util.observer.impl.PrintObjectivesObserver;
+import org.uma.jmetal.util.termination.impl.TerminationByEvaluations;
 
 
 public class BasuraAlgorithm {
 	private String instanceFolder;
 	private int [] estadoInicial;
-	private int cantidadCamiones=100,
+	private int cantidadCamiones=10,
+			cores=8,
 			populationSize=100,
 			maxEvaluations=100000;
 	
@@ -34,28 +44,35 @@ public class BasuraAlgorithm {
 	    CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(0.6);
 	    MutationOperator<BinarySolution> mutation = new BitFlipMutation(0.0008);
 	    SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<BinarySolution>();
-	    
-	    //Algorithm<BinarySolution> algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
-	      //      .setPopulationSize(populationSize)
-	        //    .setMaxEvaluations(maxEvaluations)
-	          //  .setSelectionOperator(selection)
-	            //.build();
 
+	    /*
 	    GeneticAlgorithmBuilder<BinarySolution> builder =
 	            new GeneticAlgorithmBuilder<BinarySolution>(problem, crossover, mutation)
 	                .setPopulationSize(populationSize)
 	                .setMaxEvaluations(maxEvaluations)
 	                .setSelectionOperator(selection)
 	                .setSolutionListEvaluator(
-	                    new MultithreadedSolutionListEvaluator<BinarySolution>(16));
+	                		new MultiThreadedSolutionListEvaluator<>());
 
 	    Algorithm<BinarySolution> algorithm = builder.build();	    
-	    
-	    
-	    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
-	    return ((Itinerario) algorithm.getResult().getVariable(0))
-	    		.setFitness(algorithm.getResult().getObjective(0))
+	    	    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
+	    return ((Itinerario) algorithm.getResult().variables().get(0))
+	    		.setFitness(algorithm.getResult().objectives()[0])
 	    		.setComputingTime(algorithmRunner.getComputingTime());
+	    */
+	    Replacement<BinarySolution> replacement = new MuPlusLambdaReplacement<>(new ObjectiveComparator<>(0)) ;
+	    AsynchronousMultiThreadedGeneticAlgorithm<BinarySolution> geneticAlgorithm =
+	            new AsynchronousMultiThreadedGeneticAlgorithm<>(
+	                cores, problem, populationSize, crossover, mutation, selection, replacement, new TerminationByEvaluations(maxEvaluations));
+	    PrintObjectivesObserver printObjectivesObserver = new PrintObjectivesObserver(100) ;
+	    geneticAlgorithm.getObservable().register(printObjectivesObserver);
+	    geneticAlgorithm.run();
+
+	    List<BinarySolution> resultList = geneticAlgorithm.getResult();
+	    for(BinarySolution b: resultList) {
+	    	System.out.println(((Itinerario) b.variables().get(0)).toString());
+	    }
+	    return (Itinerario) resultList.iterator().next().variables().get(0);
 	}
 
 	
@@ -66,7 +83,11 @@ public class BasuraAlgorithm {
 		this.cantidadCamiones = cantidadCamiones;
 		return this;
 	}
-
+	public BasuraAlgorithm setCores(int cores) {
+		this.cores = cores;
+		return this;
+	}
+	
 	public int getPopulationSize() {
 		return populationSize;
 	}

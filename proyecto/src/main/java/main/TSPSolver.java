@@ -1,5 +1,6 @@
 package main;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,12 +34,14 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 
-public class TSPSolver {
-	public final int CAPACIDAD_MAXIMA = 200; //Cantidad maxima de residuos que se pueden levantar.
+public class TSPSolver implements Serializable{
+
+	private static final long serialVersionUID = -5979648570893638696L;
+	public int CAPACIDAD_MAXIMA = 100; //Cantidad maxima de residuos que se pueden levantar.
 	public final int COSTO_POR_DISTANCIA = 1; //Costo por metro recorrido
 	public final float COSTO_POR_TIEMPO = 0;//00.001f; // Costo por segundo de transporte (En milisegundos)
 	public final int COSTO_FIJO = 0;//100; //Costo fijo por utilizar el camion
-	public final double MAX_TIME = 2880000000.0*1000; //8hs (En ms)
+	public final double MAX_TIME = 1000*60*60*8; //8hs (En ms)
 	public final double TIEMPOXCONTENEDOR = 60*3*1000; //Tiempo que se permanece en cada contenedor (en ms).
 	public final Location felipe_cardozo =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(-56.0982134,-34.8504341))
 			.setId("startpoint").build();
@@ -52,8 +55,10 @@ public class TSPSolver {
 	private float [] tiempoFromStartpoint;
 	private float [] distanciaToStartpoint;
 	private float [] distanciaFromStartpoint;
-	
-	private class DtSol{
+	private int zhash;
+	private class DtSol implements Serializable{
+
+		private static final long serialVersionUID = -7325221375719119916L;
 		public int [] index;
 		public float [] sol;
 		public DtSol(int [] i, float [] s) {
@@ -63,24 +68,8 @@ public class TSPSolver {
 	}
 	
 	private Map<Integer,List<DtSol>> cache = new HashMap<Integer,List<DtSol>>();
-	
-	TSPSolver(){
-		VehicleTypeImpl.Builder templateCamionDeBasura = VehicleTypeImpl.Builder.newInstance("camionDeBasuraA01")
-				.addCapacityDimension(0, CAPACIDAD_MAXIMA)
-				.setCostPerDistance(COSTO_POR_DISTANCIA)
-				.setCostPerTransportTime(COSTO_POR_TIEMPO)
-				.setFixedCost(COSTO_FIJO);
-		VehicleType camionDeBasura = templateCamionDeBasura.build();
-		VehicleImpl.Builder fabricaCamiones = VehicleImpl.Builder.newInstance("camionMontevideo")
-				.setStartLocation(startpoint)
-				.setEndLocation(startpoint)
-				.setReturnToDepot(true)
-				.setEarliestStart(0)
-				.setLatestArrival(MAX_TIME)
-				.setType(camionDeBasura);
-				
-		camion = fabricaCamiones.build();
-	}
+
+	TSPSolver(){ }
 	
     /**
      * Calcula la ruta optima para levatar los contenedores 
@@ -91,6 +80,7 @@ public class TSPSolver {
      * @return retorna float[] donde la primer entrada es la distancia recorrida en metros del recorrido y la segunda entrada es el tiempo empleado para hacerlo
      */
 	public float [] solve(int [] indiceContenedores,boolean plotResults){
+		
 		int hash = Arrays.hashCode(indiceContenedores);
 		if(cache.containsKey(hash)) {
 			for(DtSol s : cache.get(hash)) {
@@ -100,15 +90,24 @@ public class TSPSolver {
 			}
 		}
 		
+		if(zhash==hash && Arrays.stream(indiceContenedores).sum()==0) {
+			float [] r = {0,0};
+			cache(indiceContenedores,r);
+			return r;
+		}
+		
 		VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance()
 				.addVehicle(camion)
 				.setFleetSize(FleetSize.FINITE)
 				.setRoutingCost(costMatrix);
+
 		for(int i=0;i<indiceContenedores.length;i++) {
-			Location l =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(positions[indiceContenedores[i]][0],
-					positions[indiceContenedores[i]][1]))
-					.setId(String.valueOf(i)).build();
-			vrpBuilder.addJob(Service.Builder.newInstance(String.valueOf(i)).setLocation(l).setServiceTime(TIEMPOXCONTENEDOR).build());
+			if(indiceContenedores[i]==1) {
+				Location l =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(positions[i][0],
+						positions[i][1]))
+						.setId(String.valueOf(i)).build();
+				vrpBuilder.addJob(Service.Builder.newInstance(String.valueOf(i)).setLocation(l).setServiceTime(TIEMPOXCONTENEDOR).addSizeDimension(0, 1).build());
+			}
 		}
 		VehicleRoutingProblem problem = vrpBuilder.build();
 		
@@ -122,37 +121,27 @@ public class TSPSolver {
 			new GraphStreamViewer(problem, bestSolution).setRenderDelay(100).display();
 			new Plotter(problem,bestSolution).plot("solution.png", "solution");
 		}
-		
-		/*
-		float tDistance=0,tTime=0;
-		for(VehicleRoute route : bestSolution.getRoutes()) {
-			Iterator<TourActivity> it = route.getActivities().iterator();
-			TourActivity a = it.next();
-			tDistance+=costMatrix.getDistance(route.getStart().getLocation(),a.getLocation(),route.getDepartureTime(),camion);
-			while(it.hasNext()) {
-				TourActivity b = it.next();
-				tDistance+=costMatrix.getDistance(a.getLocation(),b.getLocation(),a.getEndTime(),camion);
-				a = b;
-				if(!it.hasNext()) {
-					tDistance+=costMatrix.getDistance(a.getLocation(),route.getEnd().getLocation(),a.getEndTime(),camion);
-				}
-			}
-			tTime = (float) route.getEnd().getArrTime();
+		float [] result = new float[2];
+		if(bestSolution.getUnassignedJobs().size()>0){
+			result[0] = 0; result[1] = -1;
+		} else {
+			result[0] = (float) bestSolution.getCost(); result[1] = (float) bestSolution.getRoutes().iterator().next().getEnd().getArrTime();
 		}
-		
-		float [] result = {tDistance,tTime};
-		*/
-		float [] result = {(float) bestSolution.getCost(),(float) bestSolution.getRoutes().iterator().next().getEnd().getArrTime()};
-		if(cache.containsKey(hash))
-			cache.get(hash).add(new DtSol(indiceContenedores,result));
-		else {
-			List<DtSol> l = new ArrayList<>();
-			l.add(new DtSol(indiceContenedores,result));
-			cache.put(hash, l);
-		}
+		cache(indiceContenedores,result);
 		return result;
 	}
 	
+	
+	private void cache(int[] i ,float[] r) {
+		int hash = Arrays.hashCode(i);
+		if(cache.containsKey(hash))
+			cache.get(hash).add(new DtSol(i,r));
+		else {
+			List<DtSol> l = new ArrayList<>();
+			l.add(new DtSol(i,r));
+			cache.put(hash, l);
+		}
+	}
 	
 	
 
@@ -169,7 +158,7 @@ public class TSPSolver {
 		VehicleImpl camion1 = vehicleBuilder.build();
 		
 		//Ubicar los contenedores
-		Service c1 = Service.Builder.newInstance("1").setLocation(Location.newInstance(-5.608671211000000056e+01,-3.479861317000000298e+01)).build();
+		Service c1 = Service.Builder.newInstance("1").setLocation(Location.newInstance(0,0)).build();
 		Service c2 = Service.Builder.newInstance("2").setLocation(Location.newInstance(5, 13)).build();
 		Service c3 = Service.Builder.newInstance("3").setLocation(Location.newInstance(15, 7)).build();
 		Service c4 = Service.Builder.newInstance("4").setLocation(Location.newInstance(15, 13)).build();
@@ -208,6 +197,25 @@ public class TSPSolver {
     		costMatrixBuilder.addTransportTime(String.valueOf(i), "startpoint", tiempoToStartpoint[i]);
         }
         costMatrix = costMatrixBuilder.build();
+        zhash = Arrays.hashCode(new int[tiempo.length]);
+		return this;
+	}
+	
+	public TSPSolver buildTrucks() {
+		VehicleTypeImpl.Builder templateCamionDeBasura = VehicleTypeImpl.Builder.newInstance("camionDeBasuraA01")
+				.addCapacityDimension(0, CAPACIDAD_MAXIMA)
+				.setCostPerDistance(COSTO_POR_DISTANCIA)
+				.setCostPerTransportTime(COSTO_POR_TIEMPO)
+				.setFixedCost(COSTO_FIJO);
+		VehicleType camionDeBasura = templateCamionDeBasura.build();
+		VehicleImpl.Builder fabricaCamiones = VehicleImpl.Builder.newInstance("camionMontevideo")
+				.setStartLocation(startpoint)
+				.setEndLocation(startpoint)
+				.setReturnToDepot(true)
+				.setEarliestStart(0)
+				.setLatestArrival(MAX_TIME)
+				.setType(camionDeBasura);	
+		camion = fabricaCamiones.build();
 		return this;
 	}
 	
@@ -215,33 +223,46 @@ public class TSPSolver {
 		simpleExample();
 	}
 
-	public void setPositions(float [][] positions) {
+	public TSPSolver setPositions(float [][] positions) {
 		this.positions = positions;
+		return this;
 	}
-	public void setTiempo(float [][] tiempo) {
+	public TSPSolver setTiempo(float [][] tiempo) {
 		this.tiempo = tiempo;
+		return this;
 	}
-	public void setDistancia(float [][] distancia) {
+	public TSPSolver setDistancia(float [][] distancia) {
 		this.distancia = distancia;
+		return this;
 	}
 
-	public void setTiempotoStartpoint(float [] tiempotoStartpoint) {
+	public TSPSolver setCapacidadCamiones(int capMax) {
+		this.CAPACIDAD_MAXIMA = capMax;
+		return this;
+	}
+	public TSPSolver setTiempotoStartpoint(float [] tiempotoStartpoint) {
 		this.tiempoToStartpoint = tiempotoStartpoint;
+		return this;
 	}
 
-	public void setTiempoFromStartpoint(float [] tiempoFromStartpoint) {
+	public TSPSolver setTiempoFromStartpoint(float [] tiempoFromStartpoint) {
 		this.tiempoFromStartpoint = tiempoFromStartpoint;
+		return this;
 	}
 
-	public void setDistanciatoStartpoint(float [] distanciatoStartpoint) {
+	public TSPSolver setDistanciatoStartpoint(float [] distanciatoStartpoint) {
 		this.distanciaToStartpoint = distanciatoStartpoint;
+		return this;
 	}
 
-	public void setDistanciaFromStartpoint(float [] distanciaFromStartpoint) {
+	public TSPSolver setDistanciaFromStartpoint(float [] distanciaFromStartpoint) {
 		this.distanciaFromStartpoint = distanciaFromStartpoint;
+		return this;
 	}
-
-	public void setStartpoint(Location startpoint) {
-		this.startpoint = startpoint;
+	
+	public TSPSolver setStartpoint(int x,int y) {
+		this.startpoint =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(x,y))
+				.setId("startpoint").build();
+		return this;
 	}
 }
