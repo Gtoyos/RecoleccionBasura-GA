@@ -1,9 +1,11 @@
 package main;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.uma.jmetal.problem.binaryproblem.impl.AbstractBinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
@@ -18,33 +20,59 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	private int [] basuraInicialContenedores;
 	private final Random seed = new Random();
 	private TSPSolver problemaTSP;
+	private Greedy greed;
 	
 	/** Constructor */
 	public BasuraProblem(String pathToInstanceFolder, int [] estadoInicialContenedores, int cantidadCamiones) {
 	    setNumberOfVariables(1);
 	    setNumberOfObjectives(1);
 	    setName("BasuraProblem");
-
+	    float [][] tiempo= null;
+		float [][] distancia= null;
+		float [][] positions= null;
+		float [] tiempoToStartpoint= null;
+		float [] tiempoFromStartpoint= null;
+		float [] distanciaToStartpoint = null;
+		float [] distanciaFromStartpoint = null;
 	    try {
 	    	System.out.print("Loading matrix data... ");
           	long startTime = System.nanoTime();
-          	problemaTSP = new TSPSolver()
-          			.setPositions(MatrixLoader.readCSV(pathToInstanceFolder+"/ubicacionContenedores.csv"))
-          			.setDistancia(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaContenedores.csv"))
-          			.setTiempo(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoContenedores.csv"))
-          			.setTiempoFromStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoDesdeStartpoint.csv")[0])
-          			.setTiempotoStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoHaciaStartpoint.csv")[0])
-          			.setDistanciaFromStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaDesdeStartpoint.csv")[0])
-          			.setDistanciatoStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaHaciaStartpoint.csv")[0])
-          			.setStartpoint(0, 0)
-          			.setCapacidadCamiones(5)
-          			.buildcostMatrix()
-          			.buildTrucks();
-		long endTime = System.nanoTime();
-		System.out.println("DONE ["+(endTime - startTime)/1000000/1000.0+" s]");
-	    } catch(IOException e) {
+    	    tiempo = MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoContenedores.csv");
+    		distancia = MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaContenedores.csv");
+    		positions = MatrixLoader.readCSV(pathToInstanceFolder+"/ubicacionContenedores.csv");
+    		tiempoToStartpoint = MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoHaciaStartpoint.csv")[0];
+    		tiempoFromStartpoint = MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoDesdeStartpoint.csv")[0];
+    		distanciaToStartpoint = MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaHaciaStartpoint.csv")[0];
+    		distanciaFromStartpoint = MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaDesdeStartpoint.csv")[0];
+    		long endTime = System.nanoTime();
+    		System.out.println("DONE ["+(endTime - startTime)/1000000/1000.0+" s]");
+	    }catch(IOException e) {
 	    	e.printStackTrace();
 	    }
+        problemaTSP = new TSPSolver()
+			.setPositions(positions)
+			.setDistancia(distancia)
+			.setTiempo(tiempo)
+			.setTiempoFromStartpoint(tiempoFromStartpoint)
+			.setTiempotoStartpoint(tiempoToStartpoint)
+			.setDistanciaFromStartpoint(distanciaFromStartpoint)
+			.setDistanciatoStartpoint(distanciaToStartpoint)
+			.setStartpoint(0, 0)
+			.setCapacidadCamiones(5)
+			.buildcostMatrix()
+			.buildTrucks();
+        greed = new Greedy()
+			.setDistancia(distancia)
+			.setTiempo(tiempo)
+			.setTiempoFromStartpoint(tiempoFromStartpoint)
+			.setTiempotoStartpoint(tiempoToStartpoint)
+			.setDistanciaFromStartpoint(distanciaFromStartpoint)
+			.setDistanciatoStartpoint(distanciaToStartpoint)
+			.setCantidadCamiones(cantidadCamiones)
+			.setCantidadContenedores(estadoInicialContenedores.length)
+			.setBasuraInicialContenedores(estadoInicialContenedores)
+			.setCAPACIDAD_MAXIMA(5);
+    					
 	    this.basuraInicialContenedores = estadoInicialContenedores;
 	    this.cantidadContenedores = estadoInicialContenedores.length;
 	    this.cantidadCamiones = cantidadCamiones;
@@ -60,7 +88,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 
 	@Override
 	public List<Integer> getListOfBitsPerVariable() {
-		return Arrays.asList(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2);
+		return new ArrayList<Integer>(Arrays.asList(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2));
 	}
 
 	/**
@@ -73,23 +101,20 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	 */
 	
 	static int cc=0;
+	static boolean primera_vez = true;
 	
 	@Override
-	public BinarySolution createSolution() {		
-		BinarySolution x = new DefaultBinarySolution(getListOfBitsPerVariable(), getNumberOfObjectives());
-		if(cc<100) {
-			Itinerario b = generarOpt();
-			x.variables().set(0, b);
-			System.out.println("heh: "+evaluate(x).objectives()[0]);
-			return x;
+	public BinarySolution createSolution() {
+		int start;
+		if(primera_vez) {
+			start = -1;
+			primera_vez = false;
+		} else {
+			start = ThreadLocalRandom.current().nextInt(0, cantidadContenedores);
 		}
-		Itinerario b = new Itinerario(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2,cantidadCamiones,cantidadContenedores,diasMaxSinLevantar);
+		BinarySolution x = new DefaultBinarySolution(getListOfBitsPerVariable(), getNumberOfObjectives());
+		Itinerario b = greed.solve(start);
 		x.variables().set(0, b);
-		for(int z=0; z<2; z++)
-			for(int i=0; i<diasMaxSinLevantar; i++)
-				for(int j=0; j<cantidadContenedores; j++)
-					for(int k=0; k<cantidadCamiones; k++)
-						((Itinerario) x.variables().get(0)).set(k,j,i,z,seed.nextInt(cantidadContenedores*cantidadCamiones)==0);
 		return x;
 	}
 	

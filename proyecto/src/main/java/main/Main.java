@@ -17,7 +17,7 @@ public class Main {
 	public static void launcher() {
 		int [] c0 = new int[10];
 
-		Itinerario sol = (new BasuraAlgorithm("simple",c0)).run();
+		Itinerario sol = (new BasuraAlgorithm("simple",c0)).run2();
 
 	    System.out.println("~Resultados Algoritmo Evolutivo~");
 	    JMetalLogger.logger.info("Total execution time: " + sol.getComputingTime() + "ms");
@@ -26,6 +26,25 @@ public class Main {
 
 	    JMetalLogger.logger.info("Fitness: " + sol.getFitness()) ;
 	    JMetalLogger.logger.info("Solution: " + sol.toString()) ;
+	    
+	    System.out.println("Greedy: ");
+	    String pathToInstanceFolder = "simple";
+	    Greedy g = new Greedy();
+	    try {
+					g.setDistancia(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaContenedores.csv"))
+					.setTiempo(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoContenedores.csv"))
+					.setTiempoFromStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoDesdeStartpoint.csv")[0])
+					.setTiempotoStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoHaciaStartpoint.csv")[0])
+					.setDistanciaFromStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaDesdeStartpoint.csv")[0])
+					.setDistanciatoStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaHaciaStartpoint.csv")[0])
+					.setCantidadCamiones(10)
+					.setCantidadContenedores(10)
+					.setBasuraInicialContenedores(c0)
+					.setCAPACIDAD_MAXIMA(5);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    System.out.println(g.solve(-1).toString());
 	}
 	
 	public static void test() {

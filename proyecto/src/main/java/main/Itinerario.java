@@ -7,7 +7,17 @@ public class Itinerario extends BinarySet{
 	private int cantCamiones,cantContenedores,cantDias;
 	
 	private double fitness;
+	private float distancia;
 	private long computingTime;
+	
+	public Itinerario(BinarySet b,int cantCamiones, int cantContenedores, int cantDias) {
+		super(b.getBinarySetLength());
+		for(int i=0; i<b.getBinarySetLength();i++)
+			this.set(i, b.get(i));
+		this.cantCamiones = cantCamiones;
+		this.cantContenedores = cantContenedores;
+		this.cantDias = cantDias;
+	}
 	
 	public Itinerario(int numberOfBits, int cantCamiones, int cantContenedores, int cantDias) {
 		super(numberOfBits);
@@ -77,5 +87,14 @@ public class Itinerario extends BinarySet{
 		}
 		
 		return stream;
+	}
+
+	public float getDistancia() {
+		return distancia;
+	}
+
+	public Itinerario setDistancia(float distancia) {
+		this.distancia = distancia;
+		return this;
 	}
 }

@@ -43,11 +43,11 @@ public class TSPSolver implements Serializable{
 	public final int COSTO_FIJO = 0;//100; //Costo fijo por utilizar el camion
 	public final double MAX_TIME = 1000*60*60*8; //8hs (En ms)
 	public final double TIEMPOXCONTENEDOR = 60*3*1000; //Tiempo que se permanece en cada contenedor (en ms).
-	public final Location felipe_cardozo =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(-56.0982134,-34.8504341))
+	public transient final Location felipe_cardozo =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(-56.0982134,-34.8504341))
 			.setId("startpoint").build();
-	private VehicleImpl camion;
-	private VehicleRoutingTransportCosts costMatrix;
-	private Location startpoint = felipe_cardozo;
+	private transient VehicleImpl camion;
+	private transient VehicleRoutingTransportCosts costMatrix;
+	private transient Location startpoint = felipe_cardozo;
 	private float [][] tiempo;
 	private float [][] distancia;
 	private float [][] positions;

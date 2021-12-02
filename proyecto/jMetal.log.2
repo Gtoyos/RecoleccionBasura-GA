@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2021-12-02T16:49:09.151327800Z</date>
-  <millis>1638463749151</millis>
-  <nanos>327800</nanos>
+  <date>2021-12-02T02:41:02.314255500Z</date>
+  <millis>1638412862314</millis>
+  <nanos>255500</nanos>
   <sequence>0</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
@@ -14,22 +14,34 @@
   <message>Loggers configured with null</message>
 </record>
 <record>
-  <date>2021-12-02T16:49:09.211293400Z</date>
-  <millis>1638463749211</millis>
-  <nanos>293400</nanos>
+  <date>2021-12-02T02:41:02.366225400Z</date>
+  <millis>1638412862366</millis>
+  <nanos>225400</nanos>
   <sequence>1</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
-  <class>org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator</class>
-  <method>&lt;init&gt;</method>
+  <class>org.uma.jmetal.util.observable.impl.DefaultObservable</class>
+  <method>register</method>
   <thread>1</thread>
-  <message>Number of cores: 16</message>
+  <message>DefaultObservable Observable: Print objectives observer registered</message>
 </record>
 <record>
-  <date>2021-12-02T16:49:40.101746100Z</date>
-  <millis>1638463780101</millis>
-  <nanos>746100</nanos>
+  <date>2021-12-02T02:41:03.331672600Z</date>
+  <millis>1638412863331</millis>
+  <nanos>672600</nanos>
   <sequence>2</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>WARNING</level>
+  <class>org.uma.jmetal.util.observer.impl.PrintObjectivesObserver</class>
+  <method>update</method>
+  <thread>1</thread>
+  <message>org.uma.jmetal.util.observer.impl.PrintObjectivesObserver: The algorithm has not registered yet any info related to the EVALUATIONS and BEST_SOLUTION keys</message>
+</record>
+<record>
+  <date>2021-12-02T02:41:07.062535500Z</date>
+  <millis>1638412867062</millis>
+  <nanos>535500</nanos>
+  <sequence>3</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>main.Main</class>
@@ -38,10 +50,10 @@
   <message>Total execution time: 0ms</message>
 </record>
 <record>
-  <date>2021-12-02T16:49:40.101746100Z</date>
-  <millis>1638463780101</millis>
-  <nanos>746100</nanos>
-  <sequence>3</sequence>
+  <date>2021-12-02T02:41:07.063534400Z</date>
+  <millis>1638412867063</millis>
+  <nanos>534400</nanos>
+  <sequence>4</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>main.Main</class>
@@ -50,10 +62,10 @@
   <message>Objectives values have been written to file FUN.tsv</message>
 </record>
 <record>
-  <date>2021-12-02T16:49:40.102745700Z</date>
-  <millis>1638463780102</millis>
-  <nanos>745700</nanos>
-  <sequence>4</sequence>
+  <date>2021-12-02T02:41:07.064534400Z</date>
+  <millis>1638412867064</millis>
+  <nanos>534400</nanos>
+  <sequence>5</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>main.Main</class>
@@ -62,10 +74,10 @@
   <message>Variables values have been written to file VAR.tsv</message>
 </record>
 <record>
-  <date>2021-12-02T16:49:40.102745700Z</date>
-  <millis>1638463780102</millis>
-  <nanos>745700</nanos>
-  <sequence>5</sequence>
+  <date>2021-12-02T02:41:07.065534100Z</date>
+  <millis>1638412867065</millis>
+  <nanos>534100</nanos>
+  <sequence>6</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>main.Main</class>
@@ -74,10 +86,10 @@
   <message>Fitness: 0.0</message>
 </record>
 <record>
-  <date>2021-12-02T16:49:40.103744900Z</date>
-  <millis>1638463780103</millis>
-  <nanos>744900</nanos>
-  <sequence>6</sequence>
+  <date>2021-12-02T02:41:07.065534100Z</date>
+  <millis>1638412867065</millis>
+  <nanos>534100</nanos>
+  <sequence>7</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>main.Main</class>
@@ -85,8 +97,8 @@
   <thread>1</thread>
   <message>Solution: 
 Dia 1
-1111100000	0000000000
-0000011111	0000000000
+1111011111	0000000000
+0000000000	0000000000
 0000000000	0000000000
 0000000000	0000000000
 0000000000	0000000000
@@ -110,4 +122,3 @@ Dia 2
 
 </message>
 </record>
-</log>

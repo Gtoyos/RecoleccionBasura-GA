@@ -6,44 +6,51 @@ import java.util.Set;
 
 public class Greedy {
 	
-	private static int cantidadContenedores;
-	private static int cantidadCamiones;
 	private final static int diasMaxSinLevantar = 2;
-	private static int [] basuraInicialContenedores;
 
 	
-	public final static int CAPACIDAD_MAXIMA = 200; //Cantidad maxima de residuos que se pueden levantar.
 	public final int COSTO_POR_DISTANCIA = 1; //Costo por metro recorrido
 	public final float COSTO_POR_TIEMPO = 0;//00.001f; // Costo por segundo de transporte (En milisegundos)
 	public final int COSTO_FIJO = 0;//100; //Costo fijo por utilizar el camion
 	public final double MAX_TIME = 2880000000.0*1000; //8hs (En ms)
 	public final double TIEMPOXCONTENEDOR = 60*3*1000; //Tiempo que se permanece en cada contenedor (en ms).
 	
+	
+	private int CAPACIDAD_MAXIMA = 200; //Cantidad maxima de residuos que se pueden levantar.
+	private int cantidadContenedores;
+	private int cantidadCamiones;
+	private int [] basuraInicialContenedores;
+	
 	private float [][] tiempo;
-	private static float [][] distancia;
+	private float [][] distancia;
 	private float [] tiempoToStartpoint;
 	private float [] tiempoFromStartpoint;
-	private static float [] distanciaToStartpoint;
-	private static float [] distanciaFromStartpoint;
+	private float [] distanciaToStartpoint;
+	private float [] distanciaFromStartpoint;
 	
 	
-	public static float solve() { // devuelve la distancia recorrida por los camiones en el greedy
+	public Itinerario solve(int xr) { // devuelve la distancia recorrida por los camiones en el greedy
+		Itinerario iti = new Itinerario(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2, cantidadCamiones, cantidadContenedores, diasMaxSinLevantar);
 		float distanciaRecorrida = 0;
 		float dis = 0;
 		Set<Integer> contOb = new HashSet<Integer>();  // contenedores que hay que levantar hoy
 		Set<Integer> contNoOb = new HashSet<Integer>(); // contenedores que no hay por que levantar 
-
+		int [] levantados = new int[cantidadContenedores];
+		
 		for (int j = 0 ; j < diasMaxSinLevantar; j++) { // para cada día
+			contNoOb.clear();
 			int[] basuraContenedores = basuraInicialContenedores;
 			for (int z=0 ; z < cantidadContenedores ; z++) { // se agregan a contOb los contenedores que hay que levantar este dia
+				if(levantados[z]==1)
+					continue;
 				basuraContenedores[z]++;
-				if (basuraContenedores[z] == diasMaxSinLevantar) {
+				if (basuraContenedores[z] >= diasMaxSinLevantar) {
 					contOb.add(z);
 				} else {
 					contNoOb.add(z);
 				}
 			}
-			for (int i = 1 ; i <= 2 ; i++) { // para cada turno
+			for (int i = 0 ; i < 2 ; i++) { // para cada turno
 				int camAct = 0; // camión actual
 				int contAct = -1; // contenedor actual (arranca en el vertedero)
 				int capAct = 0 ; // cuantos contenedores va levantando el camión actual
@@ -59,22 +66,17 @@ public class Greedy {
 								dis = distanciaFromStartpoint[act];
 							}	
 						}
+						distanciaRecorrida += dis;
 					} else { // estoy en un contenedor
-						Iterator<Integer> it = contOb.iterator(); 
-						dis = Float.POSITIVE_INFINITY; //  calcular distancia mínima desde el contenedor actual
-						int cont = 0;
-						while (it.hasNext()) {
-							int act = it.next();
-							if (distancia[contAct][act] < dis) {
-								cont = act;
-								dis = distancia[contAct][act];
-							}
-							contAct = cont;
-						}
+						float [] d = new float[1];
+						contAct = contMasCerca(contAct, contOb,d);
+						distanciaRecorrida += d[0];
 					}
+					iti.set(camAct, contAct, j, i, true);
+					levantados[contAct] = 1;
 					contOb.remove(contAct);
 					basuraContenedores[contAct] = 0; // el contenedore fue vaciado
-					distanciaRecorrida += dis;
+					
 					capAct++;
 					if (capAct == CAPACIDAD_MAXIMA) { // el camión actual no soporta más contenedores
 						distanciaRecorrida += distanciaToStartpoint[contAct]; // hacer que vuelva al vertedero
@@ -94,22 +96,18 @@ public class Greedy {
 								dis = distanciaFromStartpoint[act];
 							}	
 						}
+						distanciaRecorrida += dis;
 					} else { // estoy en un contenedor
-						Iterator<Integer> it = contNoOb.iterator(); 
-						dis = Float.POSITIVE_INFINITY; //  calcular distancia mínima desde el contenedor actual
-						int cont = 0;
-						while (it.hasNext()) {
-							int act = it.next();
-							if (distancia[contAct][act] < dis) {
-								cont = act;
-								dis = distancia[contAct][act];
-							}
-							contAct = cont;
-						}
+						float [] d = new float[1];						
+						contAct = contMasCerca(contAct, contNoOb,d);
+						distanciaRecorrida += d[0];
 					}
+					iti.set(camAct, contAct, j, i, true);
+					levantados[contAct] = 1;
+					
 					contNoOb.remove(contAct);
 					basuraContenedores[contAct] = 0; // el contenedore fue vaciado
-					distanciaRecorrida += dis;
+
 					capAct++;
 					if (capAct == CAPACIDAD_MAXIMA) { // el camión actual no soporta más contenedores
 						distanciaRecorrida += distanciaToStartpoint[contAct]; // hacer que vuelva al vertedero
@@ -122,31 +120,85 @@ public class Greedy {
 				}
 			}
 		}
-		return distanciaRecorrida;
+		iti.setDistancia(distanciaRecorrida);
+		return iti;
+	}
+	
+	//calcular distancia mínima desde el contenedor actual
+	private int contMasCerca(int contenedor, Set<Integer> contOb, float [] dist) {
+		float dis = Float.POSITIVE_INFINITY;
+		int cont = 0;
+		for(Integer i: contOb) {
+			if (distancia[contenedor][i] < dis) {
+				cont = i;
+				dis = distancia[contenedor][i];
+			}
+		}
+		dist[0] = dis;
+		return cont;
 	}
 	
 	
-	public void setTiempo(float [][] tiempo) {
+	public Greedy setTiempo(float [][] tiempo) {
 		this.tiempo = tiempo;
+		return this;
+		
 	}
-	public void setDistancia(float [][] distancia) {
+	public Greedy setDistancia(float [][] distancia) {
 		this.distancia = distancia;
+		return this;
 	}
 
-	public void setTiempotoStartpoint(float [] tiempotoStartpoint) {
+	public Greedy setTiempotoStartpoint(float [] tiempotoStartpoint) {
 		this.tiempoToStartpoint = tiempotoStartpoint;
+		return this;
 	}
 
-	public void setTiempoFromStartpoint(float [] tiempoFromStartpoint) {
+	public Greedy setTiempoFromStartpoint(float [] tiempoFromStartpoint) {
 		this.tiempoFromStartpoint = tiempoFromStartpoint;
+		return this;
 	}
 
-	public void setDistanciatoStartpoint(float [] distanciatoStartpoint) {
+	public Greedy setDistanciatoStartpoint(float [] distanciatoStartpoint) {
 		this.distanciaToStartpoint = distanciatoStartpoint;
+		return this;
 	}
 
-	public void setDistanciaFromStartpoint(float [] distanciaFromStartpoint) {
+	public Greedy setDistanciaFromStartpoint(float [] distanciaFromStartpoint) {
 		this.distanciaFromStartpoint = distanciaFromStartpoint;
+		return this;
+	}
+
+	public Greedy setCantidadContenedores(int cantidadContenedores) {
+		this.cantidadContenedores = cantidadContenedores;
+		return this;
+	}
+	public Greedy setCantidadCamiones(int cantidadCamiones) {
+		this.cantidadCamiones = cantidadCamiones;
+		return this;
 	}
 	
+	public Greedy setCAPACIDAD_MAXIMA(int CAPACIDAD_MAXIMA) {
+		this.CAPACIDAD_MAXIMA = CAPACIDAD_MAXIMA;
+		return this;
+	}
+	public Greedy setBasuraInicialContenedores(int [] basuraInicialContenedores) {
+		this.basuraInicialContenedores = basuraInicialContenedores;
+		return this;
+	}
 }
+
+
+
+/*
+ * 						Iterator<Integer> it = contNoOb.iterator(); 
+						dis = Float.POSITIVE_INFINITY; //  calcular distancia mínima desde el contenedor actual
+						int cont = 0;
+						while (it.hasNext()) {
+							int act = it.next();
+							if (distancia[contAct][act] < dis) {
+								cont = act;
+								dis = distancia[contAct][act];
+							}
+							contAct = cont;
+						} */
