@@ -20,6 +20,7 @@ public class Greedy {
 	private int cantidadContenedores;
 	private int cantidadCamiones;
 	private int [] basuraInicialContenedores;
+	private int contIni;
 	
 	private float [][] tiempo;
 	private float [][] distancia;
@@ -29,13 +30,22 @@ public class Greedy {
 	private float [] distanciaFromStartpoint;
 	
 	
-	public Itinerario solve(int xr) { // devuelve la distancia recorrida por los camiones en el greedy
+	public Itinerario solve(int xr) { 	
 		Itinerario iti = new Itinerario(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2, cantidadCamiones, cantidadContenedores, diasMaxSinLevantar);
 		float distanciaRecorrida = 0;
 		float dis = 0;
+		int camAct = 0; // camión actual
+		int contAct = -1; // contenedor actual (arranca en el vertedero)
+		int capAct = 0 ; // cuantos contenedores va levantando el camión actual
+		if (contIni != -1) {
+			contAct = contIni;
+			distanciaRecorrida += distanciaFromStartpoint[contAct];
+			capAct++;
+		}
 		Set<Integer> contOb = new HashSet<Integer>();  // contenedores que hay que levantar hoy
 		Set<Integer> contNoOb = new HashSet<Integer>(); // contenedores que no hay por que levantar 
 		int [] levantados = new int[cantidadContenedores];
+		levantados[contIni] = 1;
 		
 		for (int j = 0 ; j < diasMaxSinLevantar; j++) { // para cada día
 			contNoOb.clear();
@@ -51,9 +61,9 @@ public class Greedy {
 				}
 			}
 			for (int i = 0 ; i < 2 ; i++) { // para cada turno
-				int camAct = 0; // camión actual
-				int contAct = -1; // contenedor actual (arranca en el vertedero)
-				int capAct = 0 ; // cuantos contenedores va levantando el camión actual
+				camAct = 0; 
+				contAct = -1; 
+				capAct = 0 ; 
 				
 				while (!contOb.isEmpty() && camAct < cantidadCamiones) {
 					if (contAct == -1) { // estoy en el vertedero
@@ -184,6 +194,11 @@ public class Greedy {
 	}
 	public Greedy setBasuraInicialContenedores(int [] basuraInicialContenedores) {
 		this.basuraInicialContenedores = basuraInicialContenedores;
+		return this;
+	}
+
+	public Greedy setContIni(int contIni) {
+		this.contIni = contIni;
 		return this;
 	}
 }
