@@ -6,3 +6,4 @@ proyecto/graphhopper/logs/graphhopper.log
 proyecto/data/*
 *.log
 proyecto/jMetal.log
+*.jar
