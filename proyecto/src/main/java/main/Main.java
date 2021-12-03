@@ -13,7 +13,7 @@ public class Main {
 	//Parametros de ejecucion del algoritmo
 	static int popsize = 100;
 	static int maxEval = 10000;
-	static int cores = 8;
+	static int cores = 16;
 	
 	public static void main(String[] args) {
 		if(args.length>0)
@@ -30,12 +30,12 @@ public class Main {
 	public static void Algorithmlauncher() {
 		
 		//Define la instancia particular del problema.
-		int cantidadDeCamiones = 100;
-		int capacidadCamiones = 5;
-		int [] c0 = new int[1000];
+		int cantidadDeCamiones = 10;
+		int capacidadCamiones = 3;
+		int [] c0 = new int[50];
 		for(int i=0; i<50; i++)
 			c0[i] = 0;
-		String pathToInstanceFolder = "i1000";
+		String pathToInstanceFolder = "i50";
 		
 		
 		Itinerario sol = (new BasuraAlgorithm(pathToInstanceFolder,c0))
@@ -48,11 +48,11 @@ public class Main {
 
 		
 		JMetalLogger.logger.info("~~~Resultados Algoritmo Evolutivo~~~");
-	    JMetalLogger.logger.info("Total execution time: " + sol.getComputingTime() + "ms");
+	    JMetalLogger.logger.info("Total execution time: " + sol.getComp() + "ms");
 	    JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
 	    JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
 
-	    JMetalLogger.logger.info("Fitness: " + sol.getFitness()) ;
+	    JMetalLogger.logger.info("Fitness: " + sol.getFit()) ;
 	    JMetalLogger.logger.info("Solution: " + sol.toString()) ;
 	    
 	    System.out.println("Greedy: ");

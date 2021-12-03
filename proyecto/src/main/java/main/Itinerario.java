@@ -56,21 +56,21 @@ public class Itinerario extends BinarySet{
 		return res;
 	}
 
-	public Itinerario setFitness(double objective) {
+	public Itinerario setFit(double objective) {
 		this.fitness = objective;
 		return this;
 	}
 
-	public Itinerario setComputingTime(long computingTime) {
+	public Itinerario setComp(long computingTime) {
 		this.computingTime = computingTime;
 		return this;
 	}
 
-	public long getComputingTime() {
+	public long getComp() {
 		return computingTime;
 	}
 
-	public double getFitness() {
+	public double getFit() {
 		return fitness;
 	}
 

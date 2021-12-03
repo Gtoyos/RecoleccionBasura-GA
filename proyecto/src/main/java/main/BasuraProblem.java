@@ -182,7 +182,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			fitness = -1*desbordados*desbordados;
 			((Itinerario) solution.variables().get(0)).setHayDesborde(true);
 		}
-		((Itinerario) solution.variables().get(0)).setFitness(fitness);
+		((Itinerario) solution.variables().get(0)).setFit(fitness);
 		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
 		((Itinerario) solution.variables().get(0)).setTiempo((float) tiempo);
 		

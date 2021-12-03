@@ -74,9 +74,7 @@ public class BasuraAlgorithm {
 	    evaluator.shutdown();
 	    
 	    //AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
-	    return ((Itinerario) algorithm.getResult().variables().get(0))
-	    		.setFitness(algorithm.getResult().objectives()[0]);
-	    		//.setComputingTime(algorithmRunner.getComputingTime());
+	    return ((Itinerario) algorithm.getResult().variables().get(0));
 
 	}
 
@@ -111,8 +109,7 @@ public class BasuraAlgorithm {
 	    long computingTime = algorithmRunner.getComputingTime() ;
 	    System.out.println(Arrays.toString(population.toArray()));
 	    Itinerario best = new Itinerario(population.get(0).variables().get(0), cantidadCamiones, estadoInicial.length, 2)
-	    		.setComputingTime(computingTime)
-	    		.setFitness(population.get(0).objectives()[0]);
+	    		.setComp(computingTime);
 	    return best;
 	}
 	
