@@ -1,6 +1,9 @@
 package main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -29,8 +32,57 @@ public class MatrixLoader {
 		}
 		return res;
 	}
+	public static void writeCSV(float[][] m,String fileName) {
+		PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new File(fileName));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Writing csv!");
+        StringBuilder builder = new StringBuilder();
+        for(int x=0;x<m.length;x++) {
+        	for(int y=0;y<m[x].length;y++) {
+        		builder.append(m[x][y]+",");
+        	}
+        	builder.deleteCharAt(builder.length()-1);
+        	builder.append("\n");
+        }
+        pw.write(builder.toString());
+        System.out.println("done!");
+	}
+	public static void writeCSV(float[] m,String fileName) {
+		PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new File(fileName));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Writing csv!");
+        StringBuilder builder = new StringBuilder();
+        for(int x=0;x<m.length;x++) {
+        	builder.append(m[x]+",");
+        }
+        builder.deleteCharAt(builder.length()-1);
+        builder.append("\n");
+        pw.write(builder.toString());
+        System.out.println("done!");
+	}
 	
-
+	public static float[][] slice(int x,int y, float[][] m){
+		float [][] resu = new float[x][y];
+		for(int k=0;k<x;k++)
+			for(int l=0; l<y;l++)
+				resu[k][l]=m[k][l];
+		return resu;
+	}
+	public static float[] slice(int x, float[] m){
+		float [] resu = new float[x];
+		for(int k=0;k<x;k++)
+			resu[k]=m[k];
+		return resu;
+	}
+	
 	//Testing 
 	public static void main(String[] args) {
 		try {

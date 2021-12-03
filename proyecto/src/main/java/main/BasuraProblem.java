@@ -3,8 +3,10 @@ package main;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.uma.jmetal.problem.binaryproblem.impl.AbstractBinaryProblem;
@@ -15,15 +17,20 @@ import org.uma.jmetal.util.errorchecking.JMetalException;
 @SuppressWarnings("serial")
 public class BasuraProblem extends AbstractBinaryProblem {
 
-	private int cantidadContenedores,cantidadCamiones;
+	private int cantidadContenedores,cantidadCamiones,capacidadCamiones;
 	private final int diasMaxSinLevantar = 2;
+	private double MAX_DIST;
 	private int [] basuraInicialContenedores;
-	private final Random seed = new Random();
 	private TSPSolver problemaTSP;
 	private Greedy greed;
 	
+	//Parametros de la funcion de fitness.
+	private int factorTurnoDiurno=2; //Es 2 veces mas costoso recorrer la ciudad de dia que denoche.
+	private double tiempoMaximo=60*60*8*1000; //Tiempo maximo de cada recorrido (en ms).
+	private int factorTiempo= 1000*60*60; //Exederse 1h tiene el mismo costo que dejar un contenedor desbordado 1 dia.
+	
 	/** Constructor */
-	public BasuraProblem(String pathToInstanceFolder, int [] estadoInicialContenedores, int cantidadCamiones) {
+	public BasuraProblem(String pathToInstanceFolder, int [] estadoInicialContenedores, int cantidadCamiones, int capacidadCamiones) {
 	    setNumberOfVariables(1);
 	    setNumberOfObjectives(1);
 	    setName("BasuraProblem");
@@ -58,7 +65,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			.setDistanciaFromStartpoint(distanciaFromStartpoint)
 			.setDistanciatoStartpoint(distanciaToStartpoint)
 			.setStartpoint(0, 0)
-			.setCapacidadCamiones(5)
+			.setCapacidadCamiones(capacidadCamiones)
 			.buildcostMatrix()
 			.buildTrucks();
         greed = new Greedy()
@@ -69,15 +76,15 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			.setDistanciaFromStartpoint(distanciaFromStartpoint)
 			.setDistanciatoStartpoint(distanciaToStartpoint)
 			.setCantidadCamiones(cantidadCamiones)
-			.setCantidadContenedores(estadoInicialContenedores.length)
 			.setBasuraInicialContenedores(estadoInicialContenedores)
-			.setCAPACIDAD_MAXIMA(5);
+			.setCAPACIDAD_MAXIMA(capacidadCamiones);
     					
 	    this.basuraInicialContenedores = estadoInicialContenedores;
 	    this.cantidadContenedores = estadoInicialContenedores.length;
 	    this.cantidadCamiones = cantidadCamiones;
+	    this.capacidadCamiones= capacidadCamiones;
+	    this.MAX_DIST = getDistanciaMaxima(distancia);
 	}
-
 
 	@Override
 	public int getBitsFromVariable(int index) {
@@ -101,19 +108,39 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	 */
 	
 	static int cc=0;
-	static boolean primera_vez = true;
-	
+	boolean primera_vez = true;
 	@Override
 	public BinarySolution createSolution() {
-		int start;
-		if(primera_vez) {
-			start = -1;
-			primera_vez = false;
-		} else {
-			start = ThreadLocalRandom.current().nextInt(0, cantidadContenedores);
-		}
 		BinarySolution x = new DefaultBinarySolution(getListOfBitsPerVariable(), getNumberOfObjectives());
-		Itinerario b = greed.solve(start);
+		if(primera_vez) {
+			//Greedy.
+			Itinerario b = greed.solve(-1);
+			x.variables().set(0, b);
+			primera_vez=false;
+			return x;
+		}
+		int strategy = ThreadLocalRandom.current().nextInt(0, 6);
+		Itinerario b = null;
+		if(strategy==0) {
+			//Greedy con mezcla de dias/turno
+			int start = ThreadLocalRandom.current().nextInt(0, cantidadContenedores);
+			b = greed.solve(start);
+		}
+		else if(strategy>1) {
+			b = new Itinerario(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2,cantidadCamiones,cantidadContenedores,diasMaxSinLevantar);
+	        for(int z=0; z<2; z++)
+	            for(int i=0; i<diasMaxSinLevantar; i++)
+	                for(int j=0; j<cantidadContenedores; j++)
+	                    for(int k=0; k<cantidadCamiones; k++)
+	                        b.set(k,j,i,z,ThreadLocalRandom.current().nextInt(0, cantidadContenedores)==0);
+
+		}
+		else if(strategy==1) {
+			//Greedy con mezcla de dias/turno
+			int start = ThreadLocalRandom.current().nextInt(0, cantidadContenedores);
+			b = greed.solve(start);
+			b.shuffleDiasTurnos();
+		}
 		x.variables().set(0, b);
 		return x;
 	}
@@ -127,8 +154,9 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	 */
 	@Override
 	public BinarySolution evaluate(BinarySolution solution) {
-		System.out.println("Eval "+(cc++));
-		int distancia=0;
+		double distancia=0;
+		double distanciaReal=0;
+		double tiempo=0;
 		double fitness =0;
 		int desbordados = calcularDesborde(solution);
 		if(desbordados==0){
@@ -137,20 +165,26 @@ public class BasuraProblem extends AbstractBinaryProblem {
 					for(int j=0; j<cantidadCamiones; j++){
 						float [] res = problemaTSP.solve(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z),false);
 						if(res[1]==-1) {
-							//Solución invalida, no cumple constraint de tiempo.
-							solution.objectives()[0] = -1*(-Double.MAX_VALUE);
-							return solution;
+							reparar((Itinerario) solution.variables().get(0));
+							return evaluate(solution);
 						}
-						//System.out.println( Arrays.toString(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z)) + "|" + Arrays.toString(res) + "|" + des);
-						distancia+=res[0];
+						distancia+=res[0]*(z==0 ? factorTurnoDiurno:1);
+						distanciaReal+=res[0];
+						tiempo+=res[1];
 					}
-			fitness = -distancia*distancia;
-			//fitness = distancia;
+			if(tiempo > tiempoMaximo*cantidadCamiones*diasMaxSinLevantar*2)
+				fitness = -1*(1/factorTiempo)*tiempo;
+			else
+				fitness = factorTurnoDiurno*MAX_DIST*MAX_DIST - distancia*distancia;
 		} else
-			fitness = -(1e20+desbordados*desbordados);
+			fitness = -1*desbordados*desbordados;
 		
+		((Itinerario) solution.variables().get(0)).setFitness(fitness);
+		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
+		((Itinerario) solution.variables().get(0)).setTiempo((float) fitness);
 		
 	    // maximization problem: multiply by -1 to minimize
+		System.out.println("Eval "+(cc++)+" "+fitness*-1+"distancia: "+distancia+"desborde: "+desbordados);
 		solution.objectives()[0] = -1*fitness;
 		return solution;
 	}
@@ -172,18 +206,82 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		return desbordados;
 	}
 
-	private Itinerario generarOpt() {
-		Itinerario b = new Itinerario(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2,cantidadCamiones,cantidadContenedores,diasMaxSinLevantar);
-		b.set(0, 1, 0, 0, true);
-		b.set(0, 2, 0, 0, true);
-		b.set(0, 3, 0, 0, true);
-		b.set(0, 4, 0, 0, true);
-		b.set(0, 5, 0, 0, true);
-		b.set(0, 6, 0, 0, true);
-		b.set(0, 7, 0, 0, true);
-		b.set(0, 8, 0, 0, true);
-		b.set(0, 9, 0, 0, true);
-		b.set(0, 0, 0, 0, true);
-		return b;
+	private Itinerario reparar(Itinerario r) {
+		class DtHorario{
+			int camion,dia,turno;
+		}
+		List<Integer> toAllocate = new ArrayList<>();
+		Map<DtHorario,Integer> camionesOciosos = new HashMap<>();
+		int [] bins;
+		for(int z=0; z<2; z++)
+			for(int i=0; i<diasMaxSinLevantar; i++)
+				for(int j=0; j<cantidadCamiones; j++){
+					bins = r.getContenedores(j,i,z);
+					int s = Arrays.stream(bins).sum();
+					while(s>capacidadCamiones) {
+						int p = ThreadLocalRandom.current().nextInt(0, cantidadContenedores);
+						if(bins[p]==1) {
+							bins[p]=0;
+							r.set(j, p, i, z, false);
+							toAllocate.add(p);
+							s--;
+						}
+					}
+					if(s<capacidadCamiones) {
+						DtHorario d = new DtHorario();
+						d.camion=j;
+						d.dia=i;
+						d.turno=z;
+						camionesOciosos.put(d, capacidadCamiones-s);
+					}
+				}
+		int i=0;
+		for(Entry<DtHorario, Integer> x : camionesOciosos.entrySet()) {
+			for(int j=0; j<x.getValue() && i< toAllocate.size(); j++)
+				r.set(x.getKey().camion, toAllocate.get(i++), x.getKey().dia, x.getKey().turno, true);
+		}
+		if(i<toAllocate.size())
+			r.setHayDesborde(true);
+		return r;
+	}
+
+
+	public int getFactorTurnoDiurno() {
+		return factorTurnoDiurno;
+	}
+
+
+	public void setFactorTurnoDiurno(int factorTurnoDiurno) {
+		this.factorTurnoDiurno = factorTurnoDiurno;
+	}
+
+
+	public double getTiempoMaximo() {
+		return tiempoMaximo;
+	}
+
+
+	public void setTiempoMaximo(double tiempoMaximo) {
+		this.tiempoMaximo = tiempoMaximo;
+	}
+
+
+	public int getFactorTiempo() {
+		return factorTiempo;
+	}
+
+
+	public void setFactorTiempo(int factorTiempo) {
+		this.factorTiempo = factorTiempo;
+	}
+	
+
+	private double getDistanciaMaxima(float[][] distancia) {
+		double max=-1;
+		for(int i=0; i< distancia.length; i++)
+			for(int j=0; j<distancia[i].length; j++)
+				if(distancia[i][j]>max)
+					max = distancia[i][j];
+		return max*this.capacidadCamiones*this.cantidadCamiones*this.diasMaxSinLevantar*2;
 	}
 }

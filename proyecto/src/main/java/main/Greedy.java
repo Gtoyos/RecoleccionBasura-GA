@@ -1,8 +1,12 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Greedy {
 	
@@ -20,7 +24,6 @@ public class Greedy {
 	private int cantidadContenedores;
 	private int cantidadCamiones;
 	private int [] basuraInicialContenedores;
-	private int contIni;
 	
 	private float [][] tiempo;
 	private float [][] distancia;
@@ -30,26 +33,20 @@ public class Greedy {
 	private float [] distanciaFromStartpoint;
 	
 	
-	public Itinerario solve(int xr) { 	
+	public Itinerario solve(int contIni) { 	
 		Itinerario iti = new Itinerario(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2, cantidadCamiones, cantidadContenedores, diasMaxSinLevantar);
 		float distanciaRecorrida = 0;
 		float dis = 0;
 		int camAct = 0; // camión actual
 		int contAct = -1; // contenedor actual (arranca en el vertedero)
 		int capAct = 0 ; // cuantos contenedores va levantando el camión actual
-		if (contIni != -1) {
-			contAct = contIni;
-			distanciaRecorrida += distanciaFromStartpoint[contAct];
-			capAct++;
-		}
-		Set<Integer> contOb = new HashSet<Integer>();  // contenedores que hay que levantar hoy
-		Set<Integer> contNoOb = new HashSet<Integer>(); // contenedores que no hay por que levantar 
 		int [] levantados = new int[cantidadContenedores];
-		levantados[contIni] = 1;
-		
-		for (int j = 0 ; j < diasMaxSinLevantar; j++) { // para cada día
+		List<Integer> contOb = new ArrayList<Integer>();  // contenedores que hay que levantar hoy
+		List<Integer> contNoOb = new ArrayList<Integer>(); // contenedores que no hay por que levantar 
+		int[] basuraContenedores = basuraInicialContenedores;
+		for (int j = 0 ; j < diasMaxSinLevantar && !(Arrays.stream(levantados).sum()==cantidadContenedores); j++) { // para cada día
 			contNoOb.clear();
-			int[] basuraContenedores = basuraInicialContenedores;
+			contOb.clear();
 			for (int z=0 ; z < cantidadContenedores ; z++) { // se agregan a contOb los contenedores que hay que levantar este dia
 				if(levantados[z]==1)
 					continue;
@@ -60,10 +57,27 @@ public class Greedy {
 					contNoOb.add(z);
 				}
 			}
-			for (int i = 0 ; i < 2 ; i++) { // para cada turno
+			for (int i = 0 ; i < 2 && !(contOb.isEmpty() && contNoOb.isEmpty()) ; i++) { // para cada turno
 				camAct = 0; 
-				contAct = -1; 
 				capAct = 0 ; 
+				if(contIni == -1)
+					contAct = -1; 
+				else {
+					
+					if(!contOb.isEmpty()) {
+						contAct =  ThreadLocalRandom.current().nextInt(0, contOb.size());
+						contOb.remove(Integer.valueOf(contAct));
+					}
+					else {
+						contAct =  ThreadLocalRandom.current().nextInt(0, contNoOb.size());
+						contNoOb.remove(Integer.valueOf(contAct));
+					}
+					distanciaRecorrida += distanciaFromStartpoint[contAct];
+					capAct++;
+					basuraContenedores[contAct] = 0; // el contenedore fue vaciado
+					levantados[contAct] = 1;
+					iti.set(camAct, contAct, j, i, true);
+				}
 				
 				while (!contOb.isEmpty() && camAct < cantidadCamiones) {
 					if (contAct == -1) { // estoy en el vertedero
@@ -84,7 +98,7 @@ public class Greedy {
 					}
 					iti.set(camAct, contAct, j, i, true);
 					levantados[contAct] = 1;
-					contOb.remove(contAct);
+					contOb.remove(Integer.valueOf(contAct));
 					basuraContenedores[contAct] = 0; // el contenedore fue vaciado
 					
 					capAct++;
@@ -92,6 +106,7 @@ public class Greedy {
 						distanciaRecorrida += distanciaToStartpoint[contAct]; // hacer que vuelva al vertedero
 						camAct++; // paso al siguiente camión
 						contAct = -1; // el próximo arranca en el vertedero
+						capAct = 0;
 					}
 				}
 				while (!contNoOb.isEmpty() && camAct < cantidadCamiones) { // sigo haciendo lo mismo con el resto de los contenedores
@@ -114,8 +129,7 @@ public class Greedy {
 					}
 					iti.set(camAct, contAct, j, i, true);
 					levantados[contAct] = 1;
-					
-					contNoOb.remove(contAct);
+					contNoOb.remove(Integer.valueOf(contAct));
 					basuraContenedores[contAct] = 0; // el contenedore fue vaciado
 
 					capAct++;
@@ -123,6 +137,7 @@ public class Greedy {
 						distanciaRecorrida += distanciaToStartpoint[contAct]; // hacer que vuelva al vertedero
 						camAct++; // paso al siguiente camión
 						contAct = -1; // el próximo arranca en el vertedero
+						capAct =0;
 					}
 				}
 				if (contAct != -1) { // si no estoy en el vertedero
@@ -130,12 +145,13 @@ public class Greedy {
 				}
 			}
 		}
+		iti.switchTurnos();
 		iti.setDistancia(distanciaRecorrida);
 		return iti;
 	}
 	
 	//calcular distancia mínima desde el contenedor actual
-	private int contMasCerca(int contenedor, Set<Integer> contOb, float [] dist) {
+	private int contMasCerca(int contenedor, List<Integer> contOb, float [] dist) {
 		float dis = Float.POSITIVE_INFINITY;
 		int cont = 0;
 		for(Integer i: contOb) {
@@ -179,10 +195,6 @@ public class Greedy {
 		return this;
 	}
 
-	public Greedy setCantidadContenedores(int cantidadContenedores) {
-		this.cantidadContenedores = cantidadContenedores;
-		return this;
-	}
 	public Greedy setCantidadCamiones(int cantidadCamiones) {
 		this.cantidadCamiones = cantidadCamiones;
 		return this;
@@ -194,13 +206,10 @@ public class Greedy {
 	}
 	public Greedy setBasuraInicialContenedores(int [] basuraInicialContenedores) {
 		this.basuraInicialContenedores = basuraInicialContenedores;
+		this.cantidadContenedores = basuraInicialContenedores.length;
 		return this;
 	}
 
-	public Greedy setContIni(int contIni) {
-		this.contIni = contIni;
-		return this;
-	}
 }
 
 

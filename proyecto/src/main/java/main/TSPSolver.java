@@ -41,7 +41,7 @@ public class TSPSolver implements Serializable{
 	public final int COSTO_POR_DISTANCIA = 1; //Costo por metro recorrido
 	public final float COSTO_POR_TIEMPO = 0;//00.001f; // Costo por segundo de transporte (En milisegundos)
 	public final int COSTO_FIJO = 0;//100; //Costo fijo por utilizar el camion
-	public final double MAX_TIME = 1000*60*60*8; //8hs (En ms)
+	public final double MAX_TIME = 1000*60*60*24; //Cota maxima preventiva de 24hs.
 	public final double TIEMPOXCONTENEDOR = 60*3*1000; //Tiempo que se permanece en cada contenedor (en ms).
 	public transient final Location felipe_cardozo =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(-56.0982134,-34.8504341))
 			.setId("startpoint").build();
@@ -95,6 +95,11 @@ public class TSPSolver implements Serializable{
 			cache(indiceContenedores,r);
 			return r;
 		}
+		else if(Arrays.stream(indiceContenedores).sum()>CAPACIDAD_MAXIMA) {
+			float [] r = {0,-1};
+			cache(indiceContenedores,r);
+			return r;
+		}
 		
 		VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance()
 				.addVehicle(camion)
@@ -122,7 +127,7 @@ public class TSPSolver implements Serializable{
 			new Plotter(problem,bestSolution).plot("solution.png", "solution");
 		}
 		float [] result = new float[2];
-		if(bestSolution.getUnassignedJobs().size()>0){
+		if(bestSolution.getUnassignedJobs().size()>0 || bestSolution.getRoutes().size()==0){
 			result[0] = 0; result[1] = -1;
 		} else {
 			result[0] = (float) bestSolution.getCost(); result[1] = (float) bestSolution.getRoutes().iterator().next().getEnd().getArrTime();
