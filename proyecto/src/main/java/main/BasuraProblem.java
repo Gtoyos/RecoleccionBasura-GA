@@ -147,7 +147,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	
 	
 	/**
-	 * Calcula el fitness de la solución. El fitness se calcula en base a las restricciones de recolección y la distancia del itinerario
+	 * Calcula el fitness de la solución. El fitness se calcula en base a las restricciones de capacidades, distancia  y tiempo del itinerario
 	 * 
 	 * @param solution solución a evaluar.
 	 * @return solución evaluada.

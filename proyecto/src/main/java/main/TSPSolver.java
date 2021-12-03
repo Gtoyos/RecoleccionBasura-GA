@@ -67,7 +67,7 @@ public class TSPSolver implements Serializable{
 		}
 	}
 	
-	private Map<Integer,List<DtSol>> cache = new HashMap<Integer,List<DtSol>>();
+	private static Map<Integer,List<DtSol>> cache = new HashMap<Integer,List<DtSol>>();
 
 	TSPSolver(){ }
 	
