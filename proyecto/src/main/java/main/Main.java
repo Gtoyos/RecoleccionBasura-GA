@@ -30,12 +30,12 @@ public class Main {
 	public static void Algorithmlauncher() {
 		
 		//Define la instancia particular del problema.
-		int cantidadDeCamiones = 18;
-		int capacidadCamiones = 20;
-		int [] c0 = new int[1000];
-		for(int i=0; i<200; i++)
+		int cantidadDeCamiones = 10;
+		int capacidadCamiones = 3;
+		int [] c0 = new int[100];
+		for(int i=0; i<10; i++)
 			c0[i] = 1;
-		String pathToInstanceFolder = "i1000";
+		String pathToInstanceFolder = "i100";
 		
 		
 		Itinerario sol = (new BasuraAlgorithm(pathToInstanceFolder,c0))
