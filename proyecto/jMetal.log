@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2021-12-03T18:38:28.769581400Z</date>
-  <millis>1638556708769</millis>
-  <nanos>581400</nanos>
+  <date>2021-12-03T19:18:40.411424Z</date>
+  <millis>1638559120411</millis>
+  <nanos>424000</nanos>
   <sequence>0</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
@@ -14,15 +14,15 @@
   <message>Loggers configured with null</message>
 </record>
 <record>
-  <date>2021-12-03T18:38:28.837561300Z</date>
-  <millis>1638556708837</millis>
-  <nanos>561300</nanos>
+  <date>2021-12-03T19:18:40.482869Z</date>
+  <millis>1638559120482</millis>
+  <nanos>869000</nanos>
   <sequence>1</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
   <class>org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator</class>
   <method>&lt;init&gt;</method>
   <thread>1</thread>
-  <message>Number of cores: 16</message>
+  <message>Number of cores: 20</message>
 </record>
 </log>
