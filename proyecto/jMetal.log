@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2021-12-03T04:49:18.211926Z</date>
-  <millis>1638506958211</millis>
-  <nanos>926000</nanos>
+  <date>2021-12-03T16:35:26.964789700Z</date>
+  <millis>1638549326964</millis>
+  <nanos>789700</nanos>
   <sequence>0</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
@@ -14,9 +14,9 @@
   <message>Loggers configured with null</message>
 </record>
 <record>
-  <date>2021-12-03T04:49:18.287646900Z</date>
-  <millis>1638506958287</millis>
-  <nanos>646900</nanos>
+  <date>2021-12-03T16:35:27.023755700Z</date>
+  <millis>1638549327023</millis>
+  <nanos>755700</nanos>
   <sequence>1</sequence>
   <logger>org.uma.jmetal.util.JMetalLogger</logger>
   <level>INFO</level>
@@ -25,95 +25,3 @@
   <thread>1</thread>
   <message>Number of cores: 8</message>
 </record>
-<record>
-  <date>2021-12-03T04:50:56.477494200Z</date>
-  <millis>1638507056477</millis>
-  <nanos>494200</nanos>
-  <sequence>2</sequence>
-  <logger>org.uma.jmetal.util.JMetalLogger</logger>
-  <level>INFO</level>
-  <class>main.Main</class>
-  <method>Algorithmlauncher</method>
-  <thread>1</thread>
-  <message>~~~Resultados Algoritmo Evolutivo~~~</message>
-</record>
-<record>
-  <date>2021-12-03T04:50:56.478500600Z</date>
-  <millis>1638507056478</millis>
-  <nanos>500600</nanos>
-  <sequence>3</sequence>
-  <logger>org.uma.jmetal.util.JMetalLogger</logger>
-  <level>INFO</level>
-  <class>main.Main</class>
-  <method>Algorithmlauncher</method>
-  <thread>1</thread>
-  <message>Total execution time: -1ms</message>
-</record>
-<record>
-  <date>2021-12-03T04:50:56.479482100Z</date>
-  <millis>1638507056479</millis>
-  <nanos>482100</nanos>
-  <sequence>4</sequence>
-  <logger>org.uma.jmetal.util.JMetalLogger</logger>
-  <level>INFO</level>
-  <class>main.Main</class>
-  <method>Algorithmlauncher</method>
-  <thread>1</thread>
-  <message>Objectives values have been written to file FUN.tsv</message>
-</record>
-<record>
-  <date>2021-12-03T04:50:56.479482100Z</date>
-  <millis>1638507056479</millis>
-  <nanos>482100</nanos>
-  <sequence>5</sequence>
-  <logger>org.uma.jmetal.util.JMetalLogger</logger>
-  <level>INFO</level>
-  <class>main.Main</class>
-  <method>Algorithmlauncher</method>
-  <thread>1</thread>
-  <message>Variables values have been written to file VAR.tsv</message>
-</record>
-<record>
-  <date>2021-12-03T04:50:56.480481800Z</date>
-  <millis>1638507056480</millis>
-  <nanos>481800</nanos>
-  <sequence>6</sequence>
-  <logger>org.uma.jmetal.util.JMetalLogger</logger>
-  <level>INFO</level>
-  <class>main.Main</class>
-  <method>Algorithmlauncher</method>
-  <thread>1</thread>
-  <message>Fitness: -2.5734244600633098E13</message>
-</record>
-<record>
-  <date>2021-12-03T04:50:56.481481400Z</date>
-  <millis>1638507056481</millis>
-  <nanos>481400</nanos>
-  <sequence>7</sequence>
-  <logger>org.uma.jmetal.util.JMetalLogger</logger>
-  <level>INFO</level>
-  <class>main.Main</class>
-  <method>Algorithmlauncher</method>
-  <thread>1</thread>
-  <message>Solution: 
-Dia 1
-00000000000000000000000000000000000000000000000000	00000000000000000000000000000000000000110100111000
-00000000000000000000000000000000000000000000000000	00000000000000000000000000000000100000001001000111
-00000000000000000000000000000000000000000000000000	00000000000000000000000100100110001100000000000000
-00000000000000000000000000000000000000000000000000	00000000000000000111011000010000000000000000000000
-00000000000000000000000000000000000000000000000000	00100100111000010000000000000000000000000000000000
-
-Dia 2
-00000000000000000000000000000000000000000000000000	10000011000000000000000000000001010001000000000000
-00000000000000000000000000000000000000000000000000	00000000000111101000000001000000000000000000000000
-00000000000000000000000000000000000000000000000000	01000000000000000000100010001000000010000010000000
-00000000000000000000000000000000000000000000000000	00011000000000000000000000000000000000000000000000
-00000000000000000000000000000000000000000000000000	00000000000000000000000000000000000000000000000000
-
-fitness: -2.5734244600633098E13
-distancia total: 192739.17
-tiempo total: 2.57342445E13
-desborde: false
-</message>
-</record>
-</log>

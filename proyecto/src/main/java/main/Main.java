@@ -9,25 +9,34 @@ import org.uma.jmetal.util.JMetalLogger;
 
 
 public class Main {
-
+	
+	//Parametros de ejecucion del algoritmo
+	static int popsize = 100;
+	static int maxEval = 10000;
+	static int cores = 8;
+	
 	public static void main(String[] args) {
+		if(args.length>0)
+			maxEval = Integer.valueOf(args[0]);
+		if(args.length>1)
+			cores = Integer.valueOf(args[1]);
 		Algorithmlauncher();
+	}
+
+	public static void analisisExperimental() {
+		
 	}
 	
 	public static void Algorithmlauncher() {
 		
 		//Define la instancia particular del problema.
-		int cantidadDeCamiones = 5;
-		int capacidadCamiones = 6;
-		int [] c0 = new int[50];
+		int cantidadDeCamiones = 100;
+		int capacidadCamiones = 5;
+		int [] c0 = new int[1000];
 		for(int i=0; i<50; i++)
-			c0[i] = 1;
-		String pathToInstanceFolder = "i50";
+			c0[i] = 0;
+		String pathToInstanceFolder = "i1000";
 		
-		//Parametros de ejecucion del algoritmo
-		int popsize = 100;
-		int maxEval = 10000;
-		int cores = 8;
 		
 		Itinerario sol = (new BasuraAlgorithm(pathToInstanceFolder,c0))
 				.setCantidadCamiones(cantidadDeCamiones)
@@ -135,4 +144,5 @@ public class Main {
 		MatrixLoader.writeCSV(distanciaToStartpoint, "i50/distanciaHaciaStartpoint.csv");
 		MatrixLoader.writeCSV(distanciaFromStartpoint, "i50/distanciaDesdeStartpoint.csv");
 	}
+
 }

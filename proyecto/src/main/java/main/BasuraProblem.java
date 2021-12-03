@@ -122,7 +122,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		int strategy = ThreadLocalRandom.current().nextInt(0, 6);
 		Itinerario b = null;
 		if(strategy==0) {
-			//Greedy con mezcla de dias/turno
+			//Greedy 
 			int start = ThreadLocalRandom.current().nextInt(0, cantidadContenedores);
 			b = greed.solve(start);
 		}
@@ -132,7 +132,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	            for(int i=0; i<diasMaxSinLevantar; i++)
 	                for(int j=0; j<cantidadContenedores; j++)
 	                    for(int k=0; k<cantidadCamiones; k++)
-	                        b.set(k,j,i,z,ThreadLocalRandom.current().nextInt(0, cantidadContenedores)==0);
+	                        b.set(k,j,i,z,(ThreadLocalRandom.current().nextInt(0, (int) Math.ceil( ((float)cantidadContenedores) / ((float)cantidadCamiones) )))==0);
 
 		}
 		else if(strategy==1) {
@@ -172,19 +172,23 @@ public class BasuraProblem extends AbstractBinaryProblem {
 						distanciaReal+=res[0];
 						tiempo+=res[1];
 					}
-			if(tiempo > tiempoMaximo*cantidadCamiones*diasMaxSinLevantar*2)
+			if(tiempo > tiempoMaximo*cantidadCamiones*diasMaxSinLevantar*2) {
 				fitness = -1*(1/factorTiempo)*tiempo;
+				System.out.println("timeput");
+			}
 			else
 				fitness = factorTurnoDiurno*MAX_DIST*MAX_DIST - distancia*distancia;
-		} else
+		} else {
 			fitness = -1*desbordados*desbordados;
-		
+			((Itinerario) solution.variables().get(0)).setHayDesborde(true);
+		}
 		((Itinerario) solution.variables().get(0)).setFitness(fitness);
 		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
-		((Itinerario) solution.variables().get(0)).setTiempo((float) fitness);
+		((Itinerario) solution.variables().get(0)).setTiempo((float) tiempo);
 		
-	    // maximization problem: multiply by -1 to minimize
-		System.out.println("Eval "+(cc++)+" "+fitness*-1+"distancia: "+distancia+"desborde: "+desbordados);
+		System.out.println("Eval "+(cc++)+" "+fitness+"distancia: "+distancia+"desborde: "+desbordados+" tiempo: "+tiempo);
+	    
+		// maximization problem: multiply by -1 to minimize
 		solution.objectives()[0] = -1*fitness;
 		return solution;
 	}
@@ -283,5 +287,6 @@ public class BasuraProblem extends AbstractBinaryProblem {
 				if(distancia[i][j]>max)
 					max = distancia[i][j];
 		return max*this.capacidadCamiones*this.cantidadCamiones*this.diasMaxSinLevantar*2;
+		
 	}
 }
