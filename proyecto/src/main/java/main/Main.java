@@ -61,7 +61,7 @@ public class Main {
 		for(int p: pops)
 			for(float c: cross)
 				for(float m: mut)
-					for(int k=0; k<50; k++) {
+					for(int k=0; k<10; k++) {
 						
 						// ----------- INSTANCIA 1 ---------- //
 						if(instance==1){
@@ -150,6 +150,7 @@ public class Main {
 							}
 						}
 					}
+		System.exit(0);
 	}
 
 	public static void AnalisisExperimental() {

@@ -184,7 +184,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		double fitness =0;
 		int desbordados = calcularDesborde(solution);
 		List<Future<float []>> futures = new ArrayList<>();
-		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(cores);
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
 		if(desbordados==0){
 			for(int z=0; z<2; z++)
 				for(int i=0; i<diasMaxSinLevantar; i++)
