@@ -222,7 +222,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
 		((Itinerario) solution.variables().get(0)).setTiempo((float) tiempo);
 		
-		if(cc%300==0)
+		if(cc%10==0)
 			System.out.println("Eval "+(cc++)+" "+fitness+"distancia: "+distancia+"desborde: "+desbordados+" tiempo: "+tiempo);
 	    
 		// maximization problem: multiply by -1 to minimize

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Vector;
 import java.util.stream.IntStream;
 
 import com.graphhopper.jsprit.analysis.toolbox.GraphStreamViewer;
@@ -109,6 +110,7 @@ public class TSPSolver implements Serializable{
 			if(cache.get(hash).size()==1) {
 				return cache.get(hash).get(0).sol;
 			}
+			
 			for(DtSol s : cache.get(hash)) {
 				if(sumi==s.sum && Arrays.equals(s.index,indiceContenedores)) {
 					return s.sol;
@@ -178,7 +180,7 @@ public class TSPSolver implements Serializable{
 		if(cache.containsKey(hash))
 			cache.get(hash).add(new DtSol(i,r));
 		else {
-			List<DtSol> l = new ArrayList<>();
+			List<DtSol> l = new Vector<>();
 			l.add(new DtSol(i,r));
 			cache.put(hash, l);
 		}
