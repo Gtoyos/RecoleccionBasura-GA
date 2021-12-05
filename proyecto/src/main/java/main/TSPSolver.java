@@ -110,8 +110,8 @@ public class TSPSolver implements Serializable{
 			if(cache.get(hash).size()==1) {
 				return cache.get(hash).get(0).sol;
 			}
-			
-			for(DtSol s : cache.get(hash)) {
+			List<DtSol> v = cache.get(hash);
+			for(DtSol s : v) {
 				if(sumi==s.sum && Arrays.equals(s.index,indiceContenedores)) {
 					return s.sol;
 				}
