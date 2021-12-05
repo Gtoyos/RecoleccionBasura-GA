@@ -27,13 +27,129 @@ public class Main {
 		if(args.length>1)
 			cores = Integer.valueOf(args[1]);
 		
-		
-		if(args.length>2)
+		if(args.length>2) {
+			if(args.length>3) {
+				AnalisisExperimentalUnico(Integer.valueOf(args[3]));
+				System.exit(0);
+			}
+			
 			if(args[2].equals("exp"))
 				AnalisisExperimental();
 			else
 				Algorithmlauncher();
-		Algorithmlauncher();
+		}
+		else
+			Algorithmlauncher();
+	}
+
+	public static void AnalisisExperimentalUnico(int instance) {
+		
+		Path file1 = Paths.get("results/inst1.txt");
+		Path file2 = Paths.get("results/inst2.txt");
+		Path file3 = Paths.get("results/inst3.txt");
+		
+		//Instancias de tamaño 50,30,20
+		int cantidadDeCamiones;
+		int cantidadDeContenedores;
+		int capacidadCamiones;
+
+		//Parametros candidatos
+		int [] pops = {50,100,150};
+		float [] cross = {0.6f,0.75f,0.95f};
+		float [] mut = {-10,0.001f,0.01f,0.1f};
+
+		for(int p: pops)
+			for(float c: cross)
+				for(float m: mut)
+					for(int k=0; k<50; k++) {
+						
+						// ----------- INSTANCIA 1 ---------- //
+						if(instance==1){
+							cantidadDeCamiones = 5;
+							capacidadCamiones = 5;
+							cantidadDeContenedores = 50;
+							int [] c0 = new int[cantidadDeContenedores];
+							for(int i=0; i<cantidadDeContenedores; i+=i+4)
+								c0[i] = 1;
+							if(m<0)
+								m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
+							
+							BasuraAlgorithm alg = new BasuraAlgorithm("i50",c0)
+									.setCantidadCamiones(cantidadDeCamiones)
+									.setCapacidadCamiones(capacidadCamiones)
+									.setPopulationSize(p)
+									.setMaxEvaluations(maxEval)
+									.setCores(cores);
+							alg.crossoverP = c;
+							alg.mutationP = m;
+							
+							Itinerario sol = alg.run3();
+							
+							String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol)+ "\n";
+							try {
+								Files.writeString(file1, line, StandardOpenOption.APPEND);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}else if(instance==2) {
+						// ----------- INSTANCIA 2 ---------- //
+						//
+						cantidadDeCamiones = 3;
+						capacidadCamiones = 4;
+						cantidadDeContenedores = 40;
+						int [] c0 = new int[cantidadDeContenedores];
+						for(int i=0; i<cantidadDeContenedores; i+=i+4)
+							c0[i] = 1;
+						if(m<0)
+							m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
+						
+						BasuraAlgorithm alg = new BasuraAlgorithm("i40",c0)
+								.setCantidadCamiones(cantidadDeCamiones)
+								.setCapacidadCamiones(capacidadCamiones)
+								.setPopulationSize(p)
+								.setMaxEvaluations(maxEval)
+								.setCores(cores);
+						alg.crossoverP = c;
+						alg.mutationP = m;
+						
+						Itinerario sol = alg.run3();
+						
+						String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol) + "\n";
+						try {
+							Files.writeString(file2, line, StandardOpenOption.APPEND);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						}else if(instance==3) {
+						// ----------- INSTANCIA 3 ---------- //
+							cantidadDeCamiones = 2;
+							capacidadCamiones = 5;
+							cantidadDeContenedores = 30;
+							int [] c0 = new int[cantidadDeContenedores];
+							for(int i=0; i<cantidadDeContenedores; i+=i+4)
+								c0[i] = 1;
+							if(m<0)
+								m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
+							
+							BasuraAlgorithm alg = new BasuraAlgorithm("i30",c0)
+									.setCantidadCamiones(cantidadDeCamiones)
+									.setCapacidadCamiones(capacidadCamiones)
+									.setPopulationSize(p)
+									.setMaxEvaluations(maxEval)
+									.setCores(cores);
+							alg.crossoverP = c;
+							alg.mutationP = m;
+							
+							Itinerario sol = alg.run3();
+							
+							String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol)+ "\n";
+							try {
+								Files.writeString(file3, line, StandardOpenOption.APPEND);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
 	}
 
 	public static void AnalisisExperimental() {
@@ -89,7 +205,7 @@ public class Main {
 						// ----------- INSTANCIA 2 ---------- //
 						//
 						cantidadDeCamiones = 3;
-						capacidadCamiones = 3;
+						capacidadCamiones = 4;
 						cantidadDeContenedores = 40;
 						int [] c0 = new int[cantidadDeContenedores];
 						for(int i=0; i<cantidadDeContenedores; i+=i+4)
