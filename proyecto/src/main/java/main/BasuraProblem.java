@@ -191,7 +191,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 						TSPRunner r = new TSPRunner(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z),z);
 						futures.add(executor.submit(r));
 					}
-			
+			executor.shutdown();
 			for(Future<float []> f: futures) {
 				try {
 					float[] res = f.get();
@@ -217,6 +217,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			fitness = -1*desbordados*desbordados;
 			((Itinerario) solution.variables().get(0)).setHayDesborde(desbordados);
 		}
+		executor = null; // unnecessary but can help GC
 		((Itinerario) solution.variables().get(0)).setFit(fitness);
 		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
 		((Itinerario) solution.variables().get(0)).setTiempo((float) tiempo);
