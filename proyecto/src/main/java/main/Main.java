@@ -33,6 +33,7 @@ public class Main {
 				AnalisisExperimental();
 			else
 				Algorithmlauncher();
+		Algorithmlauncher();
 	}
 
 	public static void AnalisisExperimental() {
@@ -161,11 +162,11 @@ public class Main {
 		
 		//Define la instancia particular del problema.
 		int cantidadDeCamiones = 5;
-		int capacidadCamiones =  4;
-		int [] c0 = new int[10];
+		int capacidadCamiones =  10;
+		int [] c0 = new int[100];
 		//for(int i=20; i<30; i++)
 		//	c0[i] = 1;
-		String pathToInstanceFolder = "i10";
+		String pathToInstanceFolder = "i100";
 		
 		
 		BasuraAlgorithm alg = new BasuraAlgorithm(pathToInstanceFolder,c0)

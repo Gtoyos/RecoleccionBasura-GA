@@ -42,7 +42,6 @@ public class BasuraAlgorithm {
 			populationSize=100,
 			maxEvaluations=10000,
 			capacidadCamiones=200;
-	public int popSize=100;
 	public float mutationP=0.008f,crossoverP=0.75f;
 	
 	private BasuraProblem problem;
@@ -56,8 +55,8 @@ public class BasuraAlgorithm {
 	public Itinerario run() {
 	    problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
 	    
-	    CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(0.8);
-	    MutationOperator<BinarySolution> mutation = new BitFlipMutation(0.0008);
+	    CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(crossoverP);
+	    MutationOperator<BinarySolution> mutation = new BitFlipMutation(mutationP);
 	    SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<BinarySolution>();
 	    
 	    //SparkConf sparkConf = new SparkConf()
