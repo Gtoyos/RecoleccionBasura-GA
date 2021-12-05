@@ -7,12 +7,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.uma.jmetal.problem.binaryproblem.impl.AbstractBinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.solution.binarysolution.impl.DefaultBinarySolution;
 import org.uma.jmetal.util.errorchecking.JMetalException;
+
+import com.graphhopper.jsprit.core.algorithm.termination.TimeTermination;
+import com.graphhopper.jsprit.core.algorithm.termination.VariationCoefficientTermination;
 
 @SuppressWarnings("serial")
 public class BasuraProblem extends AbstractBinaryProblem {
@@ -23,6 +31,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	private int [] basuraInicialContenedores;
 	private TSPSolver problemaTSP;
 	private Greedy greed;
+	private int cores=5;
 	
 	//Parametros de la funcion de fitness.
 	private int factorTurnoDiurno=2; //Es 2 veces mas costoso recorrer la ciudad de dia que denoche.
@@ -30,7 +39,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	private int factorTiempo= 1000*60*60; //Exederse 1h tiene el mismo costo que dejar un contenedor desbordado 1 dia.
 	
 	/** Constructor */
-	public BasuraProblem(String pathToInstanceFolder, int [] estadoInicialContenedores, int cantidadCamiones, int capacidadCamiones) {
+	public BasuraProblem(String pathToInstanceFolder, int [] estadoInicialContenedores, int cantidadCamiones, int capacidadCamiones,int cores) {
 	    setNumberOfVariables(1);
 	    setNumberOfObjectives(1);
 	    setName("BasuraProblem");
@@ -64,7 +73,6 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			.setTiempotoStartpoint(tiempoToStartpoint)
 			.setDistanciaFromStartpoint(distanciaFromStartpoint)
 			.setDistanciatoStartpoint(distanciaToStartpoint)
-			.setStartpoint(0, 0)
 			.setCapacidadCamiones(capacidadCamiones)
 			.buildcostMatrix()
 			.buildTrucks();
@@ -84,6 +92,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	    this.cantidadCamiones = cantidadCamiones;
 	    this.capacidadCamiones= capacidadCamiones;
 	    this.MAX_DIST = getDistanciaMaxima(distancia);
+	    this.cores=cores;
 	}
 
 	@Override
@@ -154,24 +163,50 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	 */
 	@Override
 	public BinarySolution evaluate(BinarySolution solution) {
+		class TSPRunner implements Callable<float []> {
+			private final int [] in;
+			private final int turno;
+			public TSPRunner(int [] in,int turno){
+				this.in=in;
+				this.turno=turno;
+			}
+			@Override
+			public float [] call() {
+				float [] r= problemaTSP.solve(in);
+				float [] res = {r[0],r[1],turno};
+				return res;
+			}
+		}
 		double distancia=0;
 		double distanciaReal=0;
 		double tiempo=0;
 		double fitness =0;
 		int desbordados = calcularDesborde(solution);
+		List<Future<float []>> futures = new ArrayList<>();
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(cores);
 		if(desbordados==0){
 			for(int z=0; z<2; z++)
 				for(int i=0; i<diasMaxSinLevantar; i++)
 					for(int j=0; j<cantidadCamiones; j++){
-						float [] res = problemaTSP.solve(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z),false);
-						if(res[1]==-1) {
-							reparar((Itinerario) solution.variables().get(0));
-							return evaluate(solution);
-						}
-						distancia+=res[0]*(z==0 ? factorTurnoDiurno:1);
-						distanciaReal+=res[0];
-						tiempo+=res[1];
+						TSPRunner r = new TSPRunner(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z),z);
+						futures.add(executor.submit(r));
 					}
+			
+			for(Future<float []> f: futures) {
+				try {
+					float[] res = f.get();
+					if(res[1]==-1) {
+						reparar((Itinerario) solution.variables().get(0));
+						return evaluate(solution);
+					}
+					distancia+=res[0]*(res[2]==0 ? factorTurnoDiurno:1);
+					distanciaReal+=res[0];
+					tiempo+=res[1];
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			if(tiempo > tiempoMaximo*cantidadCamiones*diasMaxSinLevantar*2) {
 				fitness = -1*(1/factorTiempo)*tiempo;
 				System.out.println("timeput");
@@ -180,13 +215,14 @@ public class BasuraProblem extends AbstractBinaryProblem {
 				fitness = factorTurnoDiurno*MAX_DIST*MAX_DIST - distancia*distancia;
 		} else {
 			fitness = -1*desbordados*desbordados;
-			((Itinerario) solution.variables().get(0)).setHayDesborde(true);
+			((Itinerario) solution.variables().get(0)).setHayDesborde(desbordados);
 		}
 		((Itinerario) solution.variables().get(0)).setFit(fitness);
 		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
 		((Itinerario) solution.variables().get(0)).setTiempo((float) tiempo);
 		
-		System.out.println("Eval "+(cc++)+" "+fitness+"distancia: "+distancia+"desborde: "+desbordados+" tiempo: "+tiempo);
+		if(cc%300==0)
+			System.out.println("Eval "+(cc++)+" "+fitness+"distancia: "+distancia+"desborde: "+desbordados+" tiempo: "+tiempo);
 	    
 		// maximization problem: multiply by -1 to minimize
 		solution.objectives()[0] = -1*fitness;
@@ -245,7 +281,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 				r.set(x.getKey().camion, toAllocate.get(i++), x.getKey().dia, x.getKey().turno, true);
 		}
 		if(i<toAllocate.size())
-			r.setHayDesborde(true);
+			r.setHayDesborde(toAllocate.size()-i);
 		return r;
 	}
 
@@ -288,5 +324,14 @@ public class BasuraProblem extends AbstractBinaryProblem {
 					max = distancia[i][j];
 		return max*this.capacidadCamiones*this.cantidadCamiones*this.diasMaxSinLevantar*2;
 		
+	}
+	
+	public BasuraProblem setTimeTermination(int time) {
+		this.problemaTSP.setTimeTermination(time);
+		return this;
+	}
+	public BasuraProblem setCoefTermiantion(int iterations, float variance) {
+		this.problemaTSP.setCoefTermiantion(iterations, variance);
+		return this;
 	}
 }

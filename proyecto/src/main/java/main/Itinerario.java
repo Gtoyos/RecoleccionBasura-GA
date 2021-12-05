@@ -12,7 +12,7 @@ public class Itinerario extends BinarySet{
 	private float distancia=-1;
 	private float tiempo=-1;
 	private long computingTime=-1;
-	private boolean hayDesborde = false;
+	private int hayDesborde = 0;
 	
 	public Itinerario(BinarySet b,int cantCamiones, int cantContenedores, int cantDias) {
 		super(b.getBinarySetLength());
@@ -93,9 +93,19 @@ public class Itinerario extends BinarySet{
 		stream+="distancia total: "+distancia+"\n";
 		stream+="tiempo total: "+tiempo+"\n";
 		stream+="desborde: "+hayDesborde+"\n";
+		stream+="computo: "+computingTime+"\n";
 		return stream;
 	}
-
+	public String getResults() {
+		String stream = "";
+		stream+="fitness: "+fitness+"\n";
+		stream+="distancia total: "+distancia+"\n";
+		stream+="tiempo total: "+tiempo+"\n";
+		stream+="desborde: "+hayDesborde+"\n";
+		stream+="computo: "+computingTime+"\n";
+		return stream;
+	}
+	
 	public float getDistancia() {
 		return distancia;
 	}
@@ -105,11 +115,11 @@ public class Itinerario extends BinarySet{
 		return this;
 	}
 
-	public boolean hayDesborde() {
+	public int hayDesborde() {
 		return hayDesborde;
 	}
 
-	public Itinerario setHayDesborde(boolean hayDesborde) {
+	public Itinerario setHayDesborde(int hayDesborde) {
 		this.hayDesborde = hayDesborde;
 		return this;
 	}

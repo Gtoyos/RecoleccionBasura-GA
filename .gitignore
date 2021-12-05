@@ -7,3 +7,4 @@ proyecto/data/*
 *.log
 proyecto/jMetal.log
 *.jar
+*.log

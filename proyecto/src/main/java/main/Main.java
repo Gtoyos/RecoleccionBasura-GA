@@ -1,6 +1,10 @@
 package main;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
 import org.uma.jmetal.util.JMetalLogger;
@@ -12,40 +16,165 @@ public class Main {
 	
 	//Parametros de ejecucion del algoritmo
 	static int popsize = 100;
-	static int maxEval = 10000;
-	static int cores = 16;
+	static int maxEval = 10;
+	static int cores = 8;
+	
+	
 	
 	public static void main(String[] args) {
 		if(args.length>0)
 			maxEval = Integer.valueOf(args[0]);
 		if(args.length>1)
 			cores = Integer.valueOf(args[1]);
-		Algorithmlauncher();
+		
+		
+		if(args.length>2)
+			if(args[2].equals("exp"))
+				AnalisisExperimental();
+			else
+				Algorithmlauncher();
 	}
 
-	public static void analisisExperimental() {
+	public static void AnalisisExperimental() {
 		
+		Path file1 = Paths.get("results/inst1.txt");
+		Path file2 = Paths.get("results/inst2.txt");
+		Path file3 = Paths.get("results/inst3.txt");
+		
+		//Instancias de tamaño 50,30,20
+		int cantidadDeCamiones;
+		int cantidadDeContenedores;
+		int capacidadCamiones;
+
+		//Parametros candidatos
+		int [] pops = {50,100,150};
+		float [] cross = {0.6f,0.75f,0.95f};
+		float [] mut = {-10,0.001f,0.01f,0.1f};
+
+		for(int p: pops)
+			for(float c: cross)
+				for(float m: mut)
+					for(int k=0; k<50; k++) {
+						
+						// ----------- INSTANCIA 1 ---------- //
+						{
+							cantidadDeCamiones = 5;
+							capacidadCamiones = 5;
+							cantidadDeContenedores = 50;
+							int [] c0 = new int[cantidadDeContenedores];
+							for(int i=0; i<cantidadDeContenedores; i+=i+4)
+								c0[i] = 1;
+							if(m<0)
+								m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
+							
+							BasuraAlgorithm alg = new BasuraAlgorithm("i50",c0)
+									.setCantidadCamiones(cantidadDeCamiones)
+									.setCapacidadCamiones(capacidadCamiones)
+									.setPopulationSize(p)
+									.setMaxEvaluations(maxEval)
+									.setCores(cores);
+							alg.crossoverP = c;
+							alg.mutationP = m;
+							
+							Itinerario sol = alg.run3();
+							
+							String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol)+ "\n";
+							try {
+								Files.writeString(file1, line, StandardOpenOption.APPEND);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						} {
+						// ----------- INSTANCIA 2 ---------- //
+						//
+						cantidadDeCamiones = 3;
+						capacidadCamiones = 3;
+						cantidadDeContenedores = 40;
+						int [] c0 = new int[cantidadDeContenedores];
+						for(int i=0; i<cantidadDeContenedores; i+=i+4)
+							c0[i] = 1;
+						if(m<0)
+							m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
+						
+						BasuraAlgorithm alg = new BasuraAlgorithm("i40",c0)
+								.setCantidadCamiones(cantidadDeCamiones)
+								.setCapacidadCamiones(capacidadCamiones)
+								.setPopulationSize(p)
+								.setMaxEvaluations(maxEval)
+								.setCores(cores);
+						alg.crossoverP = c;
+						alg.mutationP = m;
+						
+						Itinerario sol = alg.run3();
+						
+						String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol) + "\n";
+						try {
+							Files.writeString(file2, line, StandardOpenOption.APPEND);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						} {
+						// ----------- INSTANCIA 3 ---------- //
+							cantidadDeCamiones = 2;
+							capacidadCamiones = 5;
+							cantidadDeContenedores = 30;
+							int [] c0 = new int[cantidadDeContenedores];
+							for(int i=0; i<cantidadDeContenedores; i+=i+4)
+								c0[i] = 1;
+							if(m<0)
+								m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
+							
+							BasuraAlgorithm alg = new BasuraAlgorithm("i30",c0)
+									.setCantidadCamiones(cantidadDeCamiones)
+									.setCapacidadCamiones(capacidadCamiones)
+									.setPopulationSize(p)
+									.setMaxEvaluations(maxEval)
+									.setCores(cores);
+							alg.crossoverP = c;
+							alg.mutationP = m;
+							
+							Itinerario sol = alg.run3();
+							
+							String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol)+ "\n";
+							try {
+								Files.writeString(file3, line, StandardOpenOption.APPEND);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+	}
+
+	
+	
+	private static String resultOneLiner(Itinerario r) {
+		String stream="";
+		String [] p=r.getResults().split("\n");
+		for(String x : p) {
+			stream += x.split(": ")[1];
+			stream += " ";
+		}
+		return stream;
 	}
 	
 	public static void Algorithmlauncher() {
 		
 		//Define la instancia particular del problema.
-		int cantidadDeCamiones = 10;
-		int capacidadCamiones = 3;
-		int [] c0 = new int[100];
-		for(int i=0; i<10; i++)
-			c0[i] = 1;
-		String pathToInstanceFolder = "i100";
+		int cantidadDeCamiones = 5;
+		int capacidadCamiones =  4;
+		int [] c0 = new int[10];
+		//for(int i=20; i<30; i++)
+		//	c0[i] = 1;
+		String pathToInstanceFolder = "i10";
 		
 		
-		Itinerario sol = (new BasuraAlgorithm(pathToInstanceFolder,c0))
+		BasuraAlgorithm alg = new BasuraAlgorithm(pathToInstanceFolder,c0)
 				.setCantidadCamiones(cantidadDeCamiones)
 				.setCapacidadCamiones(capacidadCamiones)
 				.setPopulationSize(popsize)
 				.setMaxEvaluations(maxEval)
-				.setCores(cores)
-				.run(); 
-
+				.setCores(cores);
+		Itinerario sol = alg.run3();
 		
 		JMetalLogger.logger.info("~~~Resultados Algoritmo Evolutivo~~~");
 	    JMetalLogger.logger.info("Total execution time: " + sol.getComp() + "ms");
@@ -56,21 +185,13 @@ public class Main {
 	    JMetalLogger.logger.info("Solution: " + sol.toString()) ;
 	    
 	    System.out.println("Greedy: ");
-	    Greedy g = new Greedy();
-	    try {
-					g.setDistancia(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaContenedores.csv"))
-					.setTiempo(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoContenedores.csv"))
-					.setTiempoFromStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoDesdeStartpoint.csv")[0])
-					.setTiempotoStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/tiempoHaciaStartpoint.csv")[0])
-					.setDistanciaFromStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaDesdeStartpoint.csv")[0])
-					.setDistanciatoStartpoint(MatrixLoader.readCSV(pathToInstanceFolder+"/distanciaHaciaStartpoint.csv")[0])
-					.setCantidadCamiones(cantidadDeCamiones)
-					.setBasuraInicialContenedores(c0)
-					.setCAPACIDAD_MAXIMA(capacidadCamiones);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	    System.out.println(g.solve(-1).toString());
+	    Itinerario greed = alg.runGreedy();
+	    System.out.println(greed.toString());
+	    
+	    System.out.println("COMPARACION: ");
+	    System.out.println(greed.getResults());
+	    System.out.println(sol.getResults());
+	    System.exit(0);
 	}
 	
 	public static void test() {

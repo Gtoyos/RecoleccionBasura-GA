@@ -1,5 +1,7 @@
 package main;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import org.uma.jmetal.parallel.asynchronous.algorithm.impl.AsynchronousMultiThre
 import org.uma.jmetal.parallel.synchronous.SparkSolutionListEvaluator;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
+import org.uma.jmetal.solution.binarysolution.impl.DefaultBinarySolution;
 import org.uma.jmetal.util.comparator.ObjectiveComparator;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
@@ -39,14 +42,19 @@ public class BasuraAlgorithm {
 			populationSize=100,
 			maxEvaluations=10000,
 			capacidadCamiones=200;
+	public int popSize=100;
+	public float mutationP=0.008f,crossoverP=0.75f;
+	
+	private BasuraProblem problem;
 	
 	public BasuraAlgorithm(String instanceFolder, int [] estadoInicial) {
 		this.instanceFolder = instanceFolder;
 		this.estadoInicial = estadoInicial;
 	}
+
 	
 	public Itinerario run() {
-	    BinaryProblem problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones);
+	    problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
 	    
 	    CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(0.8);
 	    MutationOperator<BinarySolution> mutation = new BitFlipMutation(0.0008);
@@ -79,7 +87,7 @@ public class BasuraAlgorithm {
 	}
 
 	public Itinerario run2() {
-		BinaryProblem problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones);
+		problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
 	    CrossoverOperator<BinarySolution> crossoverOperator;
 	    MutationOperator<BinarySolution> mutationOperator;
 	    SelectionOperator<List<BinarySolution>, BinarySolution> parentsSelection;
@@ -111,6 +119,56 @@ public class BasuraAlgorithm {
 	    Itinerario best = new Itinerario(population.get(0).variables().get(0), cantidadCamiones, estadoInicial.length, 2)
 	    		.setComp(computingTime);
 	    return best;
+	}
+	
+	public Itinerario run3() {
+		problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
+
+	    CrossoverOperator<BinarySolution> crossover = new HUXCrossover(crossoverP);//new SinglePointCrossover(0.8);
+	    MutationOperator<BinarySolution> mutation = new BitFlipMutation(mutationP);
+	    SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<BinarySolution>();
+	    Replacement<BinarySolution> replacement = new MuPlusLambdaReplacement<>(new ObjectiveComparator<>(0)) ;
+	    
+	    long initTime = System.currentTimeMillis();
+	    AsynchronousMultiThreadedGeneticAlgorithm<BinarySolution> geneticAlgorithm =
+	        new AsynchronousMultiThreadedGeneticAlgorithm<>(
+	            cores, problem, populationSize, crossover, mutation, selection, replacement, new TerminationByEvaluations(maxEvaluations));
+
+	    //PrintObjectivesObserver printObjectivesObserver = new PrintObjectivesObserver(100) ;
+	    //geneticAlgorithm.getObservable().register(printObjectivesObserver);
+	    
+	    geneticAlgorithm.run();
+	    geneticAlgorithm.updateProgress();
+	    
+	    long endTime = System.currentTimeMillis();
+	    List<BinarySolution> resultList = geneticAlgorithm.getResult();
+	    return ((Itinerario) resultList.get(0).variables().get(0)).setComp(endTime-initTime);
+	}
+	
+	public Itinerario runGreedy() {
+	    System.out.println("Greedy: ");
+	    Greedy g = new Greedy();
+	    try {
+					g.setDistancia(MatrixLoader.readCSV(instanceFolder+"/distanciaContenedores.csv"))
+					.setTiempo(MatrixLoader.readCSV(instanceFolder+"/tiempoContenedores.csv"))
+					.setTiempoFromStartpoint(MatrixLoader.readCSV(instanceFolder+"/tiempoDesdeStartpoint.csv")[0])
+					.setTiempotoStartpoint(MatrixLoader.readCSV(instanceFolder+"/tiempoHaciaStartpoint.csv")[0])
+					.setDistanciaFromStartpoint(MatrixLoader.readCSV(instanceFolder+"/distanciaDesdeStartpoint.csv")[0])
+					.setDistanciatoStartpoint(MatrixLoader.readCSV(instanceFolder+"/distanciaHaciaStartpoint.csv")[0])
+					.setCantidadCamiones(cantidadCamiones)
+					.setBasuraInicialContenedores(estadoInicial)
+					.setCAPACIDAD_MAXIMA(capacidadCamiones);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    long initTime = System.currentTimeMillis();
+	    Itinerario it = g.solve(-1);
+	    BinarySolution b = new DefaultBinarySolution(new ArrayList<>(Arrays.asList(it.getBinarySetLength())),1);
+	    b.variables().set(0, it);
+	    problem.evaluate(b);
+	    long endTime = System.currentTimeMillis();
+	    it.setComp(endTime-initTime);
+	    return it;
 	}
 	
 	public int getCantidadCamiones() {

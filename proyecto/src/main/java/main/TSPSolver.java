@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,9 @@ import com.graphhopper.jsprit.analysis.toolbox.GraphStreamViewer;
 import com.graphhopper.jsprit.analysis.toolbox.Plotter;
 import com.graphhopper.jsprit.core.algorithm.VehicleRoutingAlgorithm;
 import com.graphhopper.jsprit.core.algorithm.box.Jsprit;
+import com.graphhopper.jsprit.core.algorithm.termination.PrematureAlgorithmTermination;
+import com.graphhopper.jsprit.core.algorithm.termination.TimeTermination;
+import com.graphhopper.jsprit.core.algorithm.termination.VariationCoefficientTermination;
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem;
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem.FleetSize;
@@ -48,6 +52,10 @@ public class TSPSolver implements Serializable{
 	private transient VehicleImpl camion;
 	private transient VehicleRoutingTransportCosts costMatrix;
 	private transient Location startpoint = felipe_cardozo;
+	
+	private PrematureAlgorithmTermination timeTermination = new TimeTermination(3000); //3 segundos por defecto
+	private PrematureAlgorithmTermination coefTermination = new VariationCoefficientTermination(50, 0.001); //Por defecto. En 50 iteraciones una diferencia de 0.001 
+	
 	private float [][] tiempo;
 	private float [][] distancia;
 	private float [][] positions;
@@ -60,6 +68,7 @@ public class TSPSolver implements Serializable{
 
 		private static final long serialVersionUID = -7325221375719119916L;
 		public int [] index;
+		public int sum;
 		public float [] sol;
 		public DtSol(int [] i, float [] s) {
 			index = i;
@@ -67,40 +76,59 @@ public class TSPSolver implements Serializable{
 		}
 	}
 	
-	private static Map<Integer,List<DtSol>> cache = new HashMap<Integer,List<DtSol>>();
+	private static Map<Integer,List<DtSol>> cache = new Hashtable<Integer,List<DtSol>>();
 
 	TSPSolver(){ }
 	
     /**
      * Calcula la ruta optima para levatar los contenedores 
      * <p>Todas las matrices del problema deben estar cargadas antes de poder ejecutar esta función
-     *
+     * 
      * @param plotResults true para imprimir los resultados
      * @param indiceContenedores contiene los contenedores que se quieren levantar segun su posicion en la matriz positions
      * @return retorna float[] donde la primer entrada es la distancia recorrida en metros del recorrido y la segunda entrada es el tiempo empleado para hacerlo
      */
+	public float [] solveVerbose(int [] indiceContenedores,boolean plotResults){
+    	System.out.print("TSPSolver::solve("+Arrays.toString(indiceContenedores)+")");
+      	long startTime = System.nanoTime();
+      	float [] r = solve(indiceContenedores,plotResults);
+		long endTime = System.nanoTime();
+		System.out.println("DONE ["+(endTime - startTime)/1000000/1000.0+" s]");
+		return r;
+	}
+	public float [] solve(int [] indiceContenedores){
+		return solve(indiceContenedores,false);
+	}
+	
+	
 	public float [] solve(int [] indiceContenedores,boolean plotResults){
-		
+		int sumi = Arrays.stream(indiceContenedores).sum();
 		int hash = Arrays.hashCode(indiceContenedores);
+		//long startTime = System.nanoTime();
 		if(cache.containsKey(hash)) {
+			if(cache.get(hash).size()==1) {
+				return cache.get(hash).get(0).sol;
+			}
 			for(DtSol s : cache.get(hash)) {
-				if(Arrays.equals(s.index,indiceContenedores)) {
+				if(sumi==s.sum && Arrays.equals(s.index,indiceContenedores)) {
 					return s.sol;
 				}
 			}
 		}
+		//long endTime = System.nanoTime();
+		//System.out.print("HASH ["+(endTime - startTime)/1000000/1000.0+" s]");
 		
 		if(zhash==hash && Arrays.stream(indiceContenedores).sum()==0) {
 			float [] r = {0,0};
-			cache(indiceContenedores,r);
+			cache(indiceContenedores,r,sumi);
 			return r;
 		}
 		else if(Arrays.stream(indiceContenedores).sum()>CAPACIDAD_MAXIMA) {
 			float [] r = {0,-1};
-			cache(indiceContenedores,r);
+			cache(indiceContenedores,r,sumi);
 			return r;
 		}
-		
+		//startTime = System.nanoTime();
 		VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance()
 				.addVehicle(camion)
 				.setFleetSize(FleetSize.FINITE)
@@ -115,12 +143,20 @@ public class TSPSolver implements Serializable{
 			}
 		}
 		VehicleRoutingProblem problem = vrpBuilder.build();
-		
-
 		VehicleRoutingAlgorithm algorithm = Jsprit.createAlgorithm(problem);
+		TimeTermination prematureTermination = new TimeTermination(3000); //No parecería ser un hard contstraint. Reduce el tiempo significativamente, pero no son 3 segundos ni cerca.
+		
+		algorithm.setPrematureAlgorithmTermination(prematureTermination);
+		algorithm.addListener(prematureTermination);
+
+	   // endTime = System.nanoTime();
+	    //System.out.print("BUILT ["+(endTime - startTime)/1000000/1000.0+" s]");
+	    
+	    //startTime = System.nanoTime();
 		Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
 		VehicleRoutingProblemSolution bestSolution = Solutions.bestOf(solutions);
-		
+	    //endTime = System.nanoTime();
+	    //System.out.print("FOUND ["+(endTime - startTime)/1000000/1000.0+" s]");
 		if(plotResults) {
 			SolutionPrinter.print(problem, bestSolution, Print.VERBOSE);
 			new GraphStreamViewer(problem, bestSolution).setRenderDelay(100).display();
@@ -132,12 +168,12 @@ public class TSPSolver implements Serializable{
 		} else {
 			result[0] = (float) bestSolution.getCost(); result[1] = (float) bestSolution.getRoutes().iterator().next().getEnd().getArrTime();
 		}
-		cache(indiceContenedores,result);
+		cache(indiceContenedores,result,sumi);
 		return result;
 	}
 	
 	
-	private void cache(int[] i ,float[] r) {
+	private void cache(int[] i ,float[] r, int sum) {
 		int hash = Arrays.hashCode(i);
 		if(cache.containsKey(hash))
 			cache.get(hash).add(new DtSol(i,r));
@@ -270,4 +306,14 @@ public class TSPSolver implements Serializable{
 				.setId("startpoint").build();
 		return this;
 	}
+	
+	public TSPSolver setTimeTermination(int time) {
+		this.timeTermination = new TimeTermination(time);
+		return this;
+	}
+	public TSPSolver setCoefTermiantion(int iterations, float variance) {
+		this.coefTermination = new VariationCoefficientTermination(iterations, variance); 
+		return this;
+	}
 }
+
