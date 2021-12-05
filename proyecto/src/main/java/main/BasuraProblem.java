@@ -37,7 +37,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	private int factorTurnoDiurno=2; //Es 2 veces mas costoso recorrer la ciudad de dia que denoche.
 	private double tiempoMaximo=60*60*8*1000; //Tiempo maximo de cada recorrido (en ms).
 	private int factorTiempo= 1000*60*60; //Exederse 1h tiene el mismo costo que dejar un contenedor desbordado 1 dia.
-	
+	private int factorbase=100000; //Costobase
 	/** Constructor */
 	public BasuraProblem(String pathToInstanceFolder, int [] estadoInicialContenedores, int cantidadCamiones, int capacidadCamiones,int cores) {
 	    setNumberOfVariables(1);
@@ -179,6 +179,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		}
 		double distancia=0;
 		double distanciaReal=0;
+		int contadorCamiones=0;
 		double tiempo=0;
 		double fitness =0;
 		int desbordados = calcularDesborde(solution);
@@ -188,6 +189,8 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			for(int z=0; z<2; z++)
 				for(int i=0; i<diasMaxSinLevantar; i++)
 					for(int j=0; j<cantidadCamiones; j++){
+						if(Arrays.stream( ((Itinerario) solution.variables().get(0)).getContenedores(j,i,z)).sum()>0)
+							contadorCamiones++;
 						TSPRunner r = new TSPRunner(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z),z);
 						futures.add(executor.submit(r));
 					}
@@ -212,7 +215,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 				System.out.println("timeput");
 			}
 			else
-				fitness = factorTurnoDiurno*MAX_DIST*MAX_DIST - distancia*distancia;
+				fitness = factorTurnoDiurno*MAX_DIST*MAX_DIST +factorbase*(cantidadCamiones*diasMaxSinLevantar*2-contadorCamiones) - distancia*distancia;
 		} else {
 			fitness = -1*desbordados*desbordados;
 			((Itinerario) solution.variables().get(0)).setHayDesborde(desbordados);
