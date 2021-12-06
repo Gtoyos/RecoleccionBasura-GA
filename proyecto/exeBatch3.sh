@@ -14,4 +14,4 @@ source /etc/profile.d/modules.sh
 export JAVA_HOME=~/lejava
 
 cd ~/ae2021_practico/proyecto
-~/lejava/bin/java -jar -Xms69G -Xmx100G ae.jar 1000 39 exp 3
+~/lejava/bin/java -jar -Xms69G -Xmx100G ae.jar 1000 8 exp 3
