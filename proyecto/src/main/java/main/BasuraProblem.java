@@ -163,6 +163,10 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	 */
 	@Override
 	public BinarySolution evaluate(BinarySolution solution) {
+		return evaluateSingleThreaded(solution);
+	}
+	
+	public BinarySolution evaluateExperimental(BinarySolution solution) {
 		class TSPRunner implements Callable<float []> {
 			private final int [] in;
 			private final int turno;
