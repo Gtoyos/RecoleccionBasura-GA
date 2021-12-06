@@ -54,7 +54,7 @@ public class Main {
 		int capacidadCamiones;
 
 		//Parametros candidatos
-		int [] pops = {50,100,150};
+		int [] pops = {150,100,50};
 		float [] cross = {0.6f,0.75f,0.95f};
 		float [] mut = {-10,0.001f,0.01f,0.1f};
 
