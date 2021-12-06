@@ -192,7 +192,11 @@ public class BasuraProblem extends AbstractBinaryProblem {
 						if(Arrays.stream( ((Itinerario) solution.variables().get(0)).getContenedores(j,i,z)).sum()>0)
 							contadorCamiones++;
 						TSPRunner r = new TSPRunner(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z),z);
+						try {
 						futures.add(executor.submit(r));
+						}catch(OutOfMemoryError e){ // Por algun motivo aveces no hay recursos para crear el thread, se procede a resolución secuencial.
+							return evaluateSingleThreaded(solution); 
+						}
 					}
 			executor.shutdown();
 			for(Future<float []> f: futures) {
@@ -233,6 +237,50 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		return solution;
 	}
 
+	public BinarySolution evaluateSingleThreaded(BinarySolution solution) {
+		double distancia=0;
+		double distanciaReal=0;
+		double tiempo=0;
+		double fitness =0;
+		int contadorCamiones=0;
+		int desbordados = calcularDesborde(solution);
+		if(desbordados==0){
+			for(int z=0; z<2; z++)
+				for(int i=0; i<diasMaxSinLevantar; i++)
+					for(int j=0; j<cantidadCamiones; j++){
+						float [] res = problemaTSP.solve(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z),false);
+						if(res[1]==-1) {
+							reparar((Itinerario) solution.variables().get(0));
+							return evaluate(solution);
+						}
+						if(Arrays.stream( ((Itinerario) solution.variables().get(0)).getContenedores(j,i,z)).sum()>0)
+							contadorCamiones++;
+						distancia+=res[0]*(z==0 ? factorTurnoDiurno:1);
+						distanciaReal+=res[0];
+						tiempo+=res[1];
+					}
+			if(tiempo > tiempoMaximo*cantidadCamiones*diasMaxSinLevantar*2) {
+				fitness = -1*(1/factorTiempo)*tiempo;
+				System.out.println("timeput");
+			}
+			else
+				fitness = factorTurnoDiurno*MAX_DIST*MAX_DIST +factorbase*(cantidadCamiones*diasMaxSinLevantar*2-contadorCamiones) - distancia*distancia;
+		} else {
+			fitness = -1*desbordados*desbordados;
+			((Itinerario) solution.variables().get(0)).setHayDesborde(desbordados);
+		}
+		((Itinerario) solution.variables().get(0)).setFit(fitness);
+		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
+		((Itinerario) solution.variables().get(0)).setTiempo((float) tiempo);
+		
+		System.out.println("Eval "+(cc++)+" "+fitness+"distancia: "+distancia+"desborde: "+desbordados+" tiempo: "+tiempo);
+	    
+		// maximization problem: multiply by -1 to minimize
+		solution.objectives()[0] = -1*fitness;
+		return solution;
+
+	}
+	
 	private int calcularDesborde(BinarySolution solution) {
 		int desbordados =0;
 		int [] state = basuraInicialContenedores.clone();
