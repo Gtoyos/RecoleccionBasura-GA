@@ -91,35 +91,37 @@ public class Main {
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
+							alg = null;
 						}else if(instance==2) {
 						// ----------- INSTANCIA 2 ---------- //
 						//
-						cantidadDeCamiones = 3;
-						capacidadCamiones = 4;
-						cantidadDeContenedores = 40;
-						int [] c0 = new int[cantidadDeContenedores];
-						for(int i=0; i<cantidadDeContenedores; i+=i+4)
-							c0[i] = 1;
-						if(m<0)
-							m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
-						
-						BasuraAlgorithm alg = new BasuraAlgorithm("i40",c0)
-								.setCantidadCamiones(cantidadDeCamiones)
-								.setCapacidadCamiones(capacidadCamiones)
-								.setPopulationSize(p)
-								.setMaxEvaluations(maxEval)
-								.setCores(cores);
-						alg.crossoverP = c;
-						alg.mutationP = m;
-						
-						Itinerario sol = alg.run3();
-						
-						String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol) + "\n";
-						try {
-							Files.writeString(file2, line, StandardOpenOption.APPEND);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+							cantidadDeCamiones = 3;
+							capacidadCamiones = 4;
+							cantidadDeContenedores = 40;
+							int [] c0 = new int[cantidadDeContenedores];
+							for(int i=0; i<cantidadDeContenedores; i+=i+4)
+								c0[i] = 1;
+							if(m<0)
+								m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
+							
+							BasuraAlgorithm alg = new BasuraAlgorithm("i40",c0)
+									.setCantidadCamiones(cantidadDeCamiones)
+									.setCapacidadCamiones(capacidadCamiones)
+									.setPopulationSize(p)
+									.setMaxEvaluations(maxEval)
+									.setCores(cores);
+							alg.crossoverP = c;
+							alg.mutationP = m;
+							
+							Itinerario sol = alg.run3();
+							
+							String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol) + "\n";
+							try {
+								Files.writeString(file2, line, StandardOpenOption.APPEND);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							alg = null;
 						}else if(instance==3) {
 						// ----------- INSTANCIA 3 ---------- //
 							cantidadDeCamiones = 2;
@@ -148,6 +150,7 @@ public class Main {
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
+							alg = null;
 						}
 					}
 		System.exit(0);
