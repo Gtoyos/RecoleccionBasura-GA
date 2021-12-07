@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 import com.graphhopper.jsprit.analysis.toolbox.GraphStreamViewer;
@@ -42,6 +43,7 @@ import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 public class TSPSolver implements Serializable{
 
+	private static final int MAX_CACHE = 1000000;
 	private static final long serialVersionUID = -5979648570893638696L;
 	public int CAPACIDAD_MAXIMA = 100; //Cantidad maxima de residuos que se pueden levantar.
 	public final int COSTO_POR_DISTANCIA = 1; //Costo por metro recorrido
@@ -66,6 +68,7 @@ public class TSPSolver implements Serializable{
 	private float [] distanciaToStartpoint;
 	private float [] distanciaFromStartpoint;
 	private int zhash;
+	private Object hash;
 	private class DtSol implements Serializable{
 
 		private static final long serialVersionUID = -7325221375719119916L;
@@ -176,6 +179,17 @@ public class TSPSolver implements Serializable{
 	
 	
 	private void cache(int[] i ,float[] r, int sum) {
+		if(cache.size()>MAX_CACHE) {
+			Map<Integer,List<DtSol>> c2 = new Hashtable<Integer,List<DtSol>>();
+			int n=0;
+			for(Entry<Integer, List<DtSol>> x: cache.entrySet()) {
+				c2.put(x.getKey(), x.getValue());
+				if(++n > c2.size()/2)
+					break;
+			}
+			cache.clear();
+			cache = c2;
+		}
 		int hash = Arrays.hashCode(i);
 		if(cache.containsKey(hash))
 			cache.get(hash).add(new DtSol(i,r));

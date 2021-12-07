@@ -44,10 +44,10 @@ public class Main {
 
 	public static void AnalisisExperimentalUnico(int instance) {
 		
-		Path file1 = Paths.get("results/inst4.txt");
+		Path file1 = Paths.get("results/inst1.txt");
 		Path file2 = Paths.get("results/inst2.txt");
 		Path file3 = Paths.get("results/inst3.txt");
-		
+		Path file4 = Paths.get("results/inst4.txt");
 		//Instancias de tamaño 50,30,20
 		int cantidadDeCamiones;
 		int cantidadDeContenedores;
@@ -74,7 +74,7 @@ public class Main {
 							if(m<0)
 								m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
 							
-							BasuraAlgorithm alg = new BasuraAlgorithm("i60",c0)
+							BasuraAlgorithm alg = new BasuraAlgorithm("i50",c0)
 									.setCantidadCamiones(cantidadDeCamiones)
 									.setCapacidadCamiones(capacidadCamiones)
 									.setPopulationSize(p)
@@ -151,6 +151,35 @@ public class Main {
 								e.printStackTrace();
 							}
 							alg = null;
+						// ----------- INSTANCIA 4 ---------- //
+						} else if(instance==4){
+								cantidadDeCamiones = 5;
+								capacidadCamiones = 5;
+								cantidadDeContenedores = 60;
+								int [] c0 = new int[cantidadDeContenedores];
+								for(int i=0; i<cantidadDeContenedores; i+=i+4)
+									c0[i] = 1;
+								if(m<0)
+									m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
+								
+								BasuraAlgorithm alg = new BasuraAlgorithm("i60",c0)
+										.setCantidadCamiones(cantidadDeCamiones)
+										.setCapacidadCamiones(capacidadCamiones)
+										.setPopulationSize(p)
+										.setMaxEvaluations(maxEval)
+										.setCores(cores);
+								alg.crossoverP = c;
+								alg.mutationP = m;
+								
+								Itinerario sol = alg.run3();
+								
+								String line = p + " " + c +" " + m +" " + k + " " + resultOneLiner(sol)+ "\n";
+								try {
+									Files.writeString(file4, line, StandardOpenOption.APPEND);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+								alg = null;
 						}
 					}
 		System.exit(0);

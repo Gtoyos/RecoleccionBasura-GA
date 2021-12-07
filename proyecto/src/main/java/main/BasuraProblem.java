@@ -161,12 +161,9 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	 * @param solution solución a evaluar.
 	 * @return solución evaluada.
 	 */
+	
 	@Override
 	public BinarySolution evaluate(BinarySolution solution) {
-		return evaluateSingleThreaded(solution);
-	}
-	
-	public BinarySolution evaluateExperimental(BinarySolution solution) {
 		class TSPRunner implements Callable<float []> {
 			private final int [] in;
 			private final int turno;
@@ -255,7 +252,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 						float [] res = problemaTSP.solve(((Itinerario) solution.variables().get(0)).getContenedores(j,i,z),false);
 						if(res[1]==-1) {
 							reparar((Itinerario) solution.variables().get(0));
-							return evaluate(solution);
+							return evaluateSingleThreaded(solution);
 						}
 						if(Arrays.stream( ((Itinerario) solution.variables().get(0)).getContenedores(j,i,z)).sum()>0)
 							contadorCamiones++;
