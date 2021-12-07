@@ -54,14 +54,14 @@ public class Main {
 		int capacidadCamiones;
 
 		//Parametros candidatos
-		int [] pops = {150,100,50};
+		int [] pops = {50,100,150};
 		float [] cross = {0.6f,0.75f,0.95f};
 		float [] mut = {-10,0.001f,0.01f,0.1f};
 
 		for(int p: pops)
 			for(float c: cross)
 				for(float m: mut)
-					for(int k=0; k<50; k++) {
+					for(int k=0; k<20; k++) {
 						
 						// ----------- INSTANCIA 1 ---------- //
 						if(instance==1){
