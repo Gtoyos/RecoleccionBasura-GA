@@ -44,7 +44,7 @@ public class Main {
 
 	public static void AnalisisExperimentalUnico(int instance) {
 		
-		Path file1 = Paths.get("results/inst1.txt");
+		Path file1 = Paths.get("results/inst4.txt");
 		Path file2 = Paths.get("results/inst2.txt");
 		Path file3 = Paths.get("results/inst3.txt");
 		
@@ -61,7 +61,7 @@ public class Main {
 		for(int p: pops)
 			for(float c: cross)
 				for(float m: mut)
-					for(int k=0; k<10; k++) {
+					for(int k=0; k<50; k++) {
 						
 						// ----------- INSTANCIA 1 ---------- //
 						if(instance==1){
@@ -74,7 +74,7 @@ public class Main {
 							if(m<0)
 								m=1f/((float) cantidadDeCamiones*cantidadDeContenedores*2f*2f);
 							
-							BasuraAlgorithm alg = new BasuraAlgorithm("i50",c0)
+							BasuraAlgorithm alg = new BasuraAlgorithm("i60",c0)
 									.setCantidadCamiones(cantidadDeCamiones)
 									.setCapacidadCamiones(capacidadCamiones)
 									.setPopulationSize(p)
