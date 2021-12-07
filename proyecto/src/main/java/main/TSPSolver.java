@@ -43,7 +43,7 @@ import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 public class TSPSolver implements Serializable{
 
-	private static final int MAX_CACHE = 1000000;
+	private static final int MAX_CACHE = 10000;
 	private static final long serialVersionUID = -5979648570893638696L;
 	public int CAPACIDAD_MAXIMA = 100; //Cantidad maxima de residuos que se pueden levantar.
 	public final int COSTO_POR_DISTANCIA = 1; //Costo por metro recorrido
@@ -184,10 +184,10 @@ public class TSPSolver implements Serializable{
 			int n=0;
 			for(Entry<Integer, List<DtSol>> x: cache.entrySet()) {
 				c2.put(x.getKey(), x.getValue());
-				if(++n > c2.size()/2)
+				if(++n > cache.size()/2)
 					break;
 			}
-			cache.clear();
+			cache = null;
 			cache = c2;
 		}
 		int hash = Arrays.hashCode(i);
