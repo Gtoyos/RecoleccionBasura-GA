@@ -14,13 +14,11 @@ import org.uma.jmetal.util.JMetalLogger;
 
 public class Main {
 	
-	//Parametros de ejecucion del algoritmo
-	static int popsize = 100;
-	static int maxEval = 10;
+	//Parametros de ejecucion del algoritmo por defecto
+	static int popsize = 150; //Resultado ajuste paramétrico.
+	static int maxEval = 100000;
 	static int cores = 8;
-	
-	
-	
+
 	public static void main(String[] args) {
 		if(args.length>0)
 			maxEval = Integer.valueOf(args[0]);
@@ -35,11 +33,50 @@ public class Main {
 			
 			if(args[2].equals("exp"))
 				AnalisisExperimental();
+			else if(args[2].equals("greedy"))
+				Greedylauncher();
 			else
 				Algorithmlauncher();
 		}
 		else
 			Algorithmlauncher();
+		System.exit(0);
+	}
+
+	public static void Greedylauncher() {
+		String pathToInstanceFolder = "instance";
+		float [] c0f = null;
+		float [] param = null;
+		try {
+			c0f = MatrixLoader.readCSV(pathToInstanceFolder+"/estadoInicial.csv")[0];
+			param = MatrixLoader.readCSV(pathToInstanceFolder+"/camiones.csv")[0];
+		}catch(IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		int [] c0 = new int[c0f.length];
+		for(int i=0; i<c0.length; i++)
+			c0[i]=(int) c0f[i];
+		int cantidadDeCamiones = (int) param[0];
+		int capacidadCamiones =  (int) param[1];
+
+		BasuraAlgorithm alg = new BasuraAlgorithm(pathToInstanceFolder,c0)
+				.setCantidadCamiones(cantidadDeCamiones)
+				.setCapacidadCamiones(capacidadCamiones)
+				.setPopulationSize(popsize)
+				.setMaxEvaluations(maxEval)
+				.setCores(cores);
+		Itinerario sol = alg.runGreedy();
+		
+	    String line = "[GREEDY] " + resultOneLiner(sol) + "\n";
+	    System.out.println(line);
+	    Path f = Paths.get("instance/results.txt");
+		try {
+			Files.writeString(f, line, StandardOpenOption.CREATE,StandardOpenOption.APPEND);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void AnalisisExperimentalUnico(int instance) {
@@ -61,7 +98,7 @@ public class Main {
 		for(int p: pops)
 			for(float c: cross)
 				for(float m: mut)
-					for(int k=0; k<20; k++) {
+					for(int k=0; k<50; k++) {
 						
 						// ----------- INSTANCIA 1 ---------- //
 						if(instance==1){
@@ -295,8 +332,6 @@ public class Main {
 					}
 	}
 
-	
-	
 	private static String resultOneLiner(Itinerario r) {
 		String stream="";
 		String [] p=r.getResults().split("\n");
@@ -308,40 +343,46 @@ public class Main {
 	}
 	
 	public static void Algorithmlauncher() {
+		String pathToInstanceFolder = "instance";
+		float [] c0f = null;
+		float [] param = null;
+		try {
+			c0f = MatrixLoader.readCSV(pathToInstanceFolder+"/estadoInicial.csv")[0];
+			param = MatrixLoader.readCSV(pathToInstanceFolder+"/camiones.csv")[0];
+		}catch(IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
-		//Define la instancia particular del problema.
-		int cantidadDeCamiones = 5;
-		int capacidadCamiones =  10;
-		int [] c0 = new int[100];
-		//for(int i=20; i<30; i++)
-		//	c0[i] = 1;
-		String pathToInstanceFolder = "i100";
-		
-		
+		int [] c0 = new int[c0f.length];
+		for(int i=0; i<c0.length; i++)
+			c0[i]=(int) c0f[i];
+		int cantidadDeCamiones = (int) param[0];
+		int capacidadCamiones =  (int) param[1];
+
 		BasuraAlgorithm alg = new BasuraAlgorithm(pathToInstanceFolder,c0)
 				.setCantidadCamiones(cantidadDeCamiones)
 				.setCapacidadCamiones(capacidadCamiones)
 				.setPopulationSize(popsize)
 				.setMaxEvaluations(maxEval)
 				.setCores(cores);
+		BasuraAlgorithm.crossoverP = 0.95f; //Según ajuste paramétrico
+		BasuraAlgorithm.mutationP = (1f/((float) cantidadDeCamiones*c0f.length * 4)); //Según ajuste paramétrico
 		Itinerario sol = alg.run3();
 		
 		JMetalLogger.logger.info("~~~Resultados Algoritmo Evolutivo~~~");
 	    JMetalLogger.logger.info("Total execution time: " + sol.getComp() + "ms");
-	    JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
-	    JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
-
 	    JMetalLogger.logger.info("Fitness: " + sol.getFit()) ;
 	    JMetalLogger.logger.info("Solution: " + sol.toString()) ;
 	    
-	    System.out.println("Greedy: ");
-	    Itinerario greed = alg.runGreedy();
-	    System.out.println(greed.toString());
-	    
-	    System.out.println("COMPARACION: ");
-	    System.out.println(greed.getResults());
-	    System.out.println(sol.getResults());
-	    System.exit(0);
+	    String line = resultOneLiner(sol) + "\n";
+	    System.out.println(line);
+	    Path f = Paths.get("instance/results.txt");
+		try {
+			Files.writeString(f, line, StandardOpenOption.CREATE,StandardOpenOption.APPEND);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void test() {

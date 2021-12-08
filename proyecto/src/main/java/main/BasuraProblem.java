@@ -31,8 +31,8 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	private int [] basuraInicialContenedores;
 	private TSPSolver problemaTSP;
 	private Greedy greed;
-	private int cores=5;
-	
+	private static int cores=5;
+	private static ThreadPoolExecutor executor = null;
 	//Parametros de la funcion de fitness.
 	private int factorTurnoDiurno=2; //Es 2 veces mas costoso recorrer la ciudad de dia que denoche.
 	private double tiempoMaximo=60*60*8*1000; //Tiempo maximo de cada recorrido (en ms).
@@ -92,7 +92,8 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	    this.cantidadCamiones = cantidadCamiones;
 	    this.capacidadCamiones= capacidadCamiones;
 	    this.MAX_DIST = getDistanciaMaxima(distancia);
-	    this.cores=cores;
+	    BasuraProblem.cores=cores;
+	    BasuraProblem.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(cores);
 	}
 
 	@Override
@@ -116,7 +117,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	 * @return Retorna la matriz codificada como una BinarySolution.
 	 */
 	
-	static int cc=0;
+	static volatile int cc=0;
 	boolean primera_vez = true;
 	@Override
 	public BinarySolution createSolution() {
@@ -185,7 +186,6 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		double fitness =0;
 		int desbordados = calcularDesborde(solution);
 		List<Future<float []>> futures = new ArrayList<>();
-		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
 		if(desbordados==0){
 			for(int z=0; z<2; z++)
 				for(int i=0; i<diasMaxSinLevantar; i++)
@@ -199,7 +199,6 @@ public class BasuraProblem extends AbstractBinaryProblem {
 							return evaluateSingleThreaded(solution); 
 						}
 					}
-			executor.shutdown();
 			for(Future<float []> f: futures) {
 				try {
 					float[] res = f.get();
@@ -225,14 +224,13 @@ public class BasuraProblem extends AbstractBinaryProblem {
 			fitness = -1*desbordados*desbordados;
 			((Itinerario) solution.variables().get(0)).setHayDesborde(desbordados);
 		}
-		executor.purge();
-		executor = null; // unnecessary but can help GC
 		((Itinerario) solution.variables().get(0)).setFit(fitness);
 		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
 		((Itinerario) solution.variables().get(0)).setTiempo((float) tiempo);
 		
-		System.out.println("Eval "+(cc++)+" "+fitness+"distancia: "+distancia+"desborde: "+desbordados+" tiempo: "+tiempo);
-	    
+		cc++;
+		if(cc%10==0)
+			System.out.println("[Eval #"+cc+"] fitness: "+fitness+" | distancia: "+distancia+" | desborde: "+desbordados+" | tiempo: "+tiempo);
 		// maximization problem: multiply by -1 to minimize
 		solution.objectives()[0] = -1*fitness;
 		return solution;
@@ -274,7 +272,9 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		((Itinerario) solution.variables().get(0)).setDistancia((float) distanciaReal);
 		((Itinerario) solution.variables().get(0)).setTiempo((float) tiempo);
 		
-		System.out.println("Eval "+(cc++)+" "+fitness+"distancia: "+distancia+"desborde: "+desbordados+" tiempo: "+tiempo);
+		cc++;
+		if(cc%10==0)
+			System.out.println("[Eval #"+(cc)+"] fitness: "+fitness+" | distancia: "+distancia+" | desborde: "+desbordados+" | tiempo: "+tiempo);
 	    
 		// maximization problem: multiply by -1 to minimize
 		solution.objectives()[0] = -1*fitness;

@@ -42,7 +42,7 @@ public class BasuraAlgorithm {
 			populationSize=100,
 			maxEvaluations=10000,
 			capacidadCamiones=200;
-	public float mutationP=0.008f,crossoverP=0.75f;
+	public static float mutationP=0.008f,crossoverP=0.95f;
 	
 	private BasuraProblem problem;
 	
@@ -145,7 +145,7 @@ public class BasuraAlgorithm {
 	}
 	
 	public Itinerario runGreedy() {
-	    System.out.println("Greedy: ");
+		problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
 	    Greedy g = new Greedy();
 	    try {
 					g.setDistancia(MatrixLoader.readCSV(instanceFolder+"/distanciaContenedores.csv"))
@@ -162,10 +162,10 @@ public class BasuraAlgorithm {
 		}
 	    long initTime = System.currentTimeMillis();
 	    Itinerario it = g.solve(-1);
+	    long endTime = System.currentTimeMillis();
 	    BinarySolution b = new DefaultBinarySolution(new ArrayList<>(Arrays.asList(it.getBinarySetLength())),1);
 	    b.variables().set(0, it);
 	    problem.evaluate(b);
-	    long endTime = System.currentTimeMillis();
 	    it.setComp(endTime-initTime);
 	    return it;
 	}

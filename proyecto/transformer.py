@@ -1,8 +1,8 @@
 import numpy as np
 
-S= 10000
-N = 10060
-FOLDER = "i60"
+S= 6000
+N = 6600
+FOLDER = "i600"
 
 r1 = np.loadtxt(open("data\\ContenedoresGraphHopper\\tiempo.csv", "r"), delimiter=",")
 r2 = np.loadtxt(open("data\\ContenedoresGraphHopper\\distancia.csv", "r"), delimiter=",")

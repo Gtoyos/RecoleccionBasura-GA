@@ -179,7 +179,6 @@ public class TSPSolver implements Serializable{
 	
 	
 	private void cache(int[] i ,float[] r, int sum) {
-		System.out.println("CACHE: "+cache.size());
 		if(cache.size()>MAX_CACHE) {
 			Map<Integer,List<DtSol>> c2 = new Hashtable<Integer,List<DtSol>>();
 			int n=0;
