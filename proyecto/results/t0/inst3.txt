@@ -1,3 +1,0 @@
-población | p.cruzamiento | p.mutacion | ejecucion | fitness | distancia | tiempo | desborde | t.computo
-
-
