@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.mochc.MOCHCBuilder;
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder;
@@ -23,14 +21,10 @@ import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.operator.selection.impl.RandomSelection;
 import org.uma.jmetal.operator.selection.impl.RankingAndCrowdingSelection;
 import org.uma.jmetal.parallel.asynchronous.algorithm.impl.AsynchronousMultiThreadedGeneticAlgorithm;
-import org.uma.jmetal.parallel.synchronous.SparkSolutionListEvaluator;
-import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.solution.binarysolution.impl.DefaultBinarySolution;
 import org.uma.jmetal.util.comparator.ObjectiveComparator;
-import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
-import org.uma.jmetal.util.observer.impl.PrintObjectivesObserver;
 import org.uma.jmetal.util.termination.impl.TerminationByEvaluations;
 
 /**
@@ -58,7 +52,7 @@ public class BasuraAlgorithm {
 
 	/**
 	 * Primera versión del algoritmo evolutivo.
-	 * @implNote Utiliza el algoritmo generico simple con un multithreaded list evaluator.
+	 * Utiliza el algoritmo generico simple con un multithreaded list evaluator.
 	 * @deprecated
 	 * @return Itinerario solución.
 	 */
@@ -88,7 +82,7 @@ public class BasuraAlgorithm {
 	
 	/**
 	 * Segunda versión del algoritmo evolutivo.
-	 * @implNote Utiliza un algoritmo MOCHC con un multithreaded list evaluator.
+	 * Utiliza un algoritmo MOCHC con un multithreaded list evaluator.
 	 * @deprecated
 	 * @return Itinerario solución.
 	 */
@@ -130,7 +124,7 @@ public class BasuraAlgorithm {
 	/**
 	 * Versión final del agloritmo evolutivo. Utiliza un algoritmo paralelo asíncrono de tipo master/slave.
 	 * <p>Los operadores son: cruzamiento HUX (Half uniform corssover) y bit flip mutation.</p>
-	 * @implNote Las probabilidades a utilizar en el algoritmo fueron escogidas tras un estudio parametrico de performance para distitas combinaciones.
+	 * Las probabilidades a utilizar en el algoritmo fueron escogidas tras un estudio parametrico de performance para distitas combinaciones.
 	 * @return Itinerario solución.
 	 */
 	public Itinerario run3() {
@@ -158,7 +152,7 @@ public class BasuraAlgorithm {
 	}
 	
 	/**
-	 * Algorito greedy para obtener la solución del itinerario. Sigue la estrategia presentada en el artículo.
+	 * Algoritmo greedy para obtener la solución del itinerario. Sigue la estrategia presentada en el artículo.
 	 * @return Itinerario ejecución
 	 */
 	public Itinerario runGreedy() {

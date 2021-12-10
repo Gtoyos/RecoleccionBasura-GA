@@ -19,13 +19,10 @@ import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.solution.binarysolution.impl.DefaultBinarySolution;
 import org.uma.jmetal.util.errorchecking.JMetalException;
 
-import com.graphhopper.jsprit.core.algorithm.termination.TimeTermination;
-import com.graphhopper.jsprit.core.algorithm.termination.VariationCoefficientTermination;
-
 /**
  * Clase que extiende el AbstractBinaryProblem con los detalles del problema de la recolección de basura.
  * 
- * @implNote La función utiliza un thredpool para evaluar de forma paralela cada una de las rutas 
+ * La función utiliza un thredpool para evaluar de forma paralela cada una de las rutas 
  * de los itinerarios utilizando TSPSolver. Si existe algun problema en la creación del thread se procede a la
  * utilización de una operación alternativa que es secuencial.
  * @author Toyos, Vallcorba
@@ -42,19 +39,26 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	private Greedy greed;
 	private static int cores=5;
 	private static ThreadPoolExecutor executor = null;
-	//Parametros de la funcion de fitness.
-	private int factorTurnoDiurno=2; //Es 2 veces mas costoso recorrer la ciudad de dia que denoche.
-	private double tiempoMaximo=60*60*8*1000; //Tiempo maximo de cada recorrido (en ms).
-	private int factorTiempo= 1000*60*60; //Exederse 1h tiene el mismo costo que dejar un contenedor desbordado 1 dia.
 	
-	private int factorbase=100000; //Costobase
+	/**Factor de costo adicional del turno diurno. (por defecto es 2 veces mas costoso recorrer la ciudad de dia que denoche.)*/
+	private int factorTurnoDiurno=2; 
+	
+	/**Tiempo máximo de la ruta de cada camión (por defecto 8hs). */
+	private double tiempoMaximo=60*60*8*1000; 
+	
+	/**Factor para equiparar la penalizaciónde desborde por la de excederse de tiempo. Por defecto exederse 1h tiene el mismo costo que dejar un contenedor desbordado 1 dia.*/
+	private int factorTiempo= 1000*60*60; 
+	
+	/**Costo base por utiilziar un camión en un dia/turno de un itinerario (por defecto el costo base equivale a 100km de recorrida de un camión)*/
+	private int factorbase=100000;
+	
 	/**
 	 * Constructor. 
 	 * @param pathToInstanceFolder: carpeta con los archivos de la instancia. 
 	 * @param estadoInicialContenedores: estado inicial de los contenedores con los dias desde que fue levantado por ultima vez
 	 * @param cantidadCamiones: cantidad máxima de camiones
 	 * @param capacidadCamiones: capacidad máxima de los camiones
-	 * @param nucleos: tamaño del pool de nucleos para la función de evaluación.
+	 * @param cores: tamaño del pool de nucleos para la función de evaluación.
 	 */
 	public BasuraProblem(String pathToInstanceFolder, int [] estadoInicialContenedores, int cantidadCamiones, int capacidadCamiones,int cores) {
 	    setNumberOfVariables(1);
@@ -110,7 +114,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	    this.capacidadCamiones= capacidadCamiones;
 	    this.MAX_DIST = getDistanciaMaxima(distancia);
 	    BasuraProblem.cores=cores;
-	    BasuraProblem.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(cores);
+	    BasuraProblem.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(BasuraProblem.cores);
 	}
 
 	@Override
@@ -135,7 +139,7 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	 * 
 	 * Para crear la solucion se escoge una estrategia de forma aleatoria. Las estrategias a utilizar son: Generación por algoritmo Greedy, generación con Greedy
 	 * más shuffle de turnos y generación aleatoria.
-	 * @implNot Las estrategias se escogen con probabilidad 0.33,0.33 y 0.66 respectivamente. 
+	 * Las estrategias se escogen con probabilidad 0.33,0.33 y 0.66 respectivamente. 
 	 * @return Retorna la matriz codificada como una BinarySolution.
 	 */
 	@Override

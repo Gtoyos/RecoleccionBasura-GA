@@ -103,7 +103,7 @@ public class MatrixLoader {
 	}
 	
 	//Testing 
-	private static void main(String[] args) {
+	/*private static void main(String[] args) {
 		try {
 			float[][] r =readCSV("data/ContenedoresGraphHopper/distancia.csv");
 			for(int i=0; i< r.length; i++)
@@ -112,5 +112,5 @@ public class MatrixLoader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

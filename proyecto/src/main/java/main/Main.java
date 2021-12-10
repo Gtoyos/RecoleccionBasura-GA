@@ -136,8 +136,8 @@ public class Main {
 									.setPopulationSize(p)
 									.setMaxEvaluations(maxEval)
 									.setCores(cores);
-							alg.crossoverP = c;
-							alg.mutationP = m;
+							BasuraAlgorithm.crossoverP = c;
+							BasuraAlgorithm.mutationP = m;
 							
 							Itinerario sol = alg.run3();
 							
@@ -166,8 +166,8 @@ public class Main {
 									.setPopulationSize(p)
 									.setMaxEvaluations(maxEval)
 									.setCores(cores);
-							alg.crossoverP = c;
-							alg.mutationP = m;
+							BasuraAlgorithm.crossoverP = c;
+							BasuraAlgorithm.mutationP = m;
 							
 							Itinerario sol = alg.run3();
 							
@@ -195,8 +195,8 @@ public class Main {
 									.setPopulationSize(p)
 									.setMaxEvaluations(maxEval)
 									.setCores(cores);
-							alg.crossoverP = c;
-							alg.mutationP = m;
+							BasuraAlgorithm.crossoverP = c;
+							BasuraAlgorithm.mutationP = m;
 							
 							Itinerario sol = alg.run3();
 							
@@ -224,8 +224,8 @@ public class Main {
 										.setPopulationSize(p)
 										.setMaxEvaluations(maxEval)
 										.setCores(cores);
-								alg.crossoverP = c;
-								alg.mutationP = m;
+								BasuraAlgorithm.crossoverP = c;
+								BasuraAlgorithm.mutationP = m;
 								
 								Itinerario sol = alg.run3();
 								
@@ -280,8 +280,8 @@ public class Main {
 									.setPopulationSize(p)
 									.setMaxEvaluations(maxEval)
 									.setCores(cores);
-							alg.crossoverP = c;
-							alg.mutationP = m;
+							BasuraAlgorithm.crossoverP = c;
+							BasuraAlgorithm.mutationP = m;
 							
 							Itinerario sol = alg.run3();
 							
@@ -309,8 +309,8 @@ public class Main {
 								.setPopulationSize(p)
 								.setMaxEvaluations(maxEval)
 								.setCores(cores);
-						alg.crossoverP = c;
-						alg.mutationP = m;
+						BasuraAlgorithm.crossoverP = c;
+						BasuraAlgorithm.mutationP = m;
 						
 						Itinerario sol = alg.run3();
 						
@@ -337,8 +337,8 @@ public class Main {
 									.setPopulationSize(p)
 									.setMaxEvaluations(maxEval)
 									.setCores(cores);
-							alg.crossoverP = c;
-							alg.mutationP = m;
+							BasuraAlgorithm.crossoverP = c;
+							BasuraAlgorithm.mutationP = m;
 							
 							Itinerario sol = alg.run3();
 							

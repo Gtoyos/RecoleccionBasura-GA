@@ -38,6 +38,7 @@ public class Itinerario extends BinarySet{
 	}
 	/**\
 	 * Constructor. Retorna un arreglo de tamaño cantCamiones*cantContenedores*cantDias*2 
+	 * @param numberOfBits: tamaño de la matriz en bits.
 	 * @param cantCamiones: filas por matriz de la solución.
 	 * @param cantContenedores: columnas según la matriz de resolución.
 	 * @param cantDias: cantidad máxima de dias en las que se puede dejar un contenedor sin atender. 
@@ -50,24 +51,19 @@ public class Itinerario extends BinarySet{
 	}
 	
 	/** Edita el valor en el itinerario para  el camión n, contenedor m el díá d para el turno matutino y nocturno.
-	 * @implNote se edita la posición: (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor
-	 * @param camion
-	 * @param contenedor
-	 * @param dia
-	 * @param turno
-	 * @param valor
+	 *  Se edita la posición: (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor
+	 * @param camion: index del camion
+	 * @param contenedor: index del contenedor
+	 * @param dia: dia del itinerario
+	 * @param turno: matutino=0, nocturno=1
+	 * @param valor: valor a settear
 	 */
 	public void set(int camion, int contenedor, int dia, int turno, boolean valor) {
 		this.set( (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor, valor);
 	}
 	
 	/** Obtiene el valor en el itinerario para  el camión n, contenedor m el díá d para el turno matutino y nocturno.
-	 * @implNote se edita la posición: (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor
-	 * @param camion
-	 * @param contenedor
-	 * @param dia
-	 * @param turno
-	 * @param valor
+	 *  Se edita la posición: (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor
 	 */
 	public int get(int camion, int contenedor, int dia, int turno) {
 		return this.get( (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor) ? 1:0;
@@ -75,9 +71,7 @@ public class Itinerario extends BinarySet{
 	
 	/**
 	 * Devuelve los contenedores levantados por un camion en un dia y turno especificos
-	 * @param camion
-	 * @param dia
-	 * @param turno
+
 	 * @return arreglo de enteros indicando si el camión levantara algúmn contenedor de basura en este momento.
 	 */
 	public int[] getContenedores(int camion, int dia, int turno) {
@@ -90,9 +84,7 @@ public class Itinerario extends BinarySet{
 
 	/**
 	 * Devuelve los contenedores levantados en el día
-	 * @param camion
-	 * @param dia
-	 * @param turno
+	 * @param dia: dia del itinerario
 	 * @return arreglo de enteros indicando los contenedores que se levantaran en el dia
 	 */
 	public int[] getContenedoresLevantadosEnElDia(int dia) {

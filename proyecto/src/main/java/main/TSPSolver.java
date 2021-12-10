@@ -1,21 +1,13 @@
 package main;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
-
 import com.graphhopper.jsprit.analysis.toolbox.GraphStreamViewer;
 import com.graphhopper.jsprit.analysis.toolbox.Plotter;
 import com.graphhopper.jsprit.core.algorithm.VehicleRoutingAlgorithm;
@@ -29,8 +21,6 @@ import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem.FleetSize;
 import com.graphhopper.jsprit.core.problem.cost.VehicleRoutingTransportCosts;
 import com.graphhopper.jsprit.core.problem.job.Service;
 import com.graphhopper.jsprit.core.problem.solution.VehicleRoutingProblemSolution;
-import com.graphhopper.jsprit.core.problem.solution.route.VehicleRoute;
-import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl;
@@ -79,7 +69,6 @@ public class TSPSolver implements Serializable{
 	private float [] distanciaToStartpoint;
 	private float [] distanciaFromStartpoint;
 	private int zhash;
-	private Object hash;
 	private class DtSol implements Serializable{
 
 		private static final long serialVersionUID = -7325221375719119916L;
@@ -217,45 +206,6 @@ public class TSPSolver implements Serializable{
 		}
 	}
 	
-	
-
-	/* Funcion de ejemplo para resolver un problema TSP básico. */
-	private static void simpleExample() {
-		//Define el tipo de vehiculo
-		VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("camionDeBasura");
-		VehicleType camionDeBasura = vehicleTypeBuilder.build();
-		
-		//Construye un vehiculo concreto
-		VehicleImpl.Builder vehicleBuilder = VehicleImpl.Builder.newInstance("vehicle");
-		vehicleBuilder.setStartLocation(Location.newInstance(0,0));
-		vehicleBuilder.setType(camionDeBasura);
-		VehicleImpl camion1 = vehicleBuilder.build();
-		
-		//Ubicar los contenedores
-		Service c1 = Service.Builder.newInstance("1").setLocation(Location.newInstance(0,0)).build();
-		Service c2 = Service.Builder.newInstance("2").setLocation(Location.newInstance(5, 13)).build();
-		Service c3 = Service.Builder.newInstance("3").setLocation(Location.newInstance(15, 7)).build();
-		Service c4 = Service.Builder.newInstance("4").setLocation(Location.newInstance(15, 13)).build();
-		
-		//Definir el problema
-		VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
-		vrpBuilder.addVehicle(camion1);
-		vrpBuilder.addJob(c1).addJob(c2).addJob(c3).addJob(c4);
-		vrpBuilder.setFleetSize(FleetSize.FINITE);
-		VehicleRoutingProblem problem = vrpBuilder.build();
-		
-		//Resolver el problema
-		VehicleRoutingAlgorithm algorithm = Jsprit.createAlgorithm(problem);
-		Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
-		VehicleRoutingProblemSolution bestSolution = Solutions.bestOf(solutions);
-		
-		//Mostar resultados
-		SolutionPrinter.print(problem, bestSolution, Print.CONCISE);
-		new GraphStreamViewer(problem, bestSolution).setRenderDelay(100).display();
-		new Plotter(problem,bestSolution).plot("solution.png", "solution");
-	}
-	
-	
 	/**
 	 * Construye la matriz de tiempo y de costos. Las cuales debieron de setearse previamente.
 	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
@@ -312,7 +262,7 @@ public class TSPSolver implements Serializable{
 	
 	/**
 	 * Setea el costo de tiempo de viaje entre contenedores.
-	 * @param tiempo: costo de tiempo contenedor<->contenedor
+	 * @param tiempo: costo de tiempo contenedor a contenedor
 	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
 	 */
 	public TSPSolver setTiempo(float [][] tiempo) {
@@ -322,7 +272,7 @@ public class TSPSolver implements Serializable{
 	
 	/**
 	 * Setea el costo de distancia de viaje entre contenedores.
-	 * @param distancia: costo de distancia contenedor<->contenedor
+	 * @param distancia: costo de distancia contenedor a contenedor
 	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
 	 */	
 	public TSPSolver setDistancia(float [][] distancia) {
@@ -396,7 +346,7 @@ public class TSPSolver implements Serializable{
 	/**
 	 * Setea el tiempo maximo de ejecuciíón del algoritmo.
 	 * @param time: tiempo máximo
-	 * @returnla instancia TSPSolver sobre la que se ejecutó la operación
+	 * @return instancia TSPSolver sobre la que se ejecutó la operación
 	 */
 	public TSPSolver setTimeTermination(int time) {
 		this.timeTermination = new TimeTermination(time);
@@ -410,5 +360,56 @@ public class TSPSolver implements Serializable{
 		this.coefTermination = new VariationCoefficientTermination(iterations, variance); 
 		return this;
 	}
+
+
+	public PrematureAlgorithmTermination getCoefTermination() {
+		return coefTermination;
+	}
+
+
+	public PrematureAlgorithmTermination getTimeTermination() {
+		return timeTermination;
+	}
 }
 
+
+
+/*
+ * 
+	/* Funcion de ejemplo para resolver un problema TSP básico.
+	private static void simpleExample() {
+		//Define el tipo de vehiculo
+		VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("camionDeBasura");
+		VehicleType camionDeBasura = vehicleTypeBuilder.build();
+		
+		//Construye un vehiculo concreto
+		VehicleImpl.Builder vehicleBuilder = VehicleImpl.Builder.newInstance("vehicle");
+		vehicleBuilder.setStartLocation(Location.newInstance(0,0));
+		vehicleBuilder.setType(camionDeBasura);
+		VehicleImpl camion1 = vehicleBuilder.build();
+		
+		//Ubicar los contenedores
+		Service c1 = Service.Builder.newInstance("1").setLocation(Location.newInstance(0,0)).build();
+		Service c2 = Service.Builder.newInstance("2").setLocation(Location.newInstance(5, 13)).build();
+		Service c3 = Service.Builder.newInstance("3").setLocation(Location.newInstance(15, 7)).build();
+		Service c4 = Service.Builder.newInstance("4").setLocation(Location.newInstance(15, 13)).build();
+		
+		//Definir el problema
+		VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
+		vrpBuilder.addVehicle(camion1);
+		vrpBuilder.addJob(c1).addJob(c2).addJob(c3).addJob(c4);
+		vrpBuilder.setFleetSize(FleetSize.FINITE);
+		VehicleRoutingProblem problem = vrpBuilder.build();
+		
+		//Resolver el problema
+		VehicleRoutingAlgorithm algorithm = Jsprit.createAlgorithm(problem);
+		Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
+		VehicleRoutingProblemSolution bestSolution = Solutions.bestOf(solutions);
+		
+		//Mostar resultados
+		SolutionPrinter.print(problem, bestSolution, Print.CONCISE);
+		new GraphStreamViewer(problem, bestSolution).setRenderDelay(100).display();
+		new Plotter(problem,bestSolution).plot("solution.png", "solution");
+	}
+	
+*/

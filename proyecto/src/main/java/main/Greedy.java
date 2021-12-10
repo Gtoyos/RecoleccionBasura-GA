@@ -2,10 +2,8 @@ package main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -32,12 +30,14 @@ public class Greedy {
 	private int cantidadCamiones;
 	private int [] basuraInicialContenedores;
 	
-	private float [][] tiempo;
 	private float [][] distancia;
-	private float [] tiempoToStartpoint;
-	private float [] tiempoFromStartpoint;
 	private float [] distanciaToStartpoint;
 	private float [] distanciaFromStartpoint;
+	
+	private float [][] tiempo;
+	private float [] tiempoToStartpoint;
+	private float [] tiempoFromStartpoint;
+	
 	
     /**
      * Calcula un itinerario utilizando el algoritmo greedy presentado en el articulo
@@ -53,6 +53,7 @@ public class Greedy {
 		int camAct = 0; // camión actual
 		int contAct = -1; // contenedor actual (arranca en el vertedero)
 		int capAct = 0 ; // cuantos contenedores va levantando el camión actual
+
 		int [] levantados = new int[cantidadContenedores];
 		List<Integer> contOb = new ArrayList<Integer>();  // contenedores que hay que levantar hoy
 		List<Integer> contNoOb = new ArrayList<Integer>(); // contenedores que no hay por que levantar 
@@ -221,6 +222,18 @@ public class Greedy {
 		this.basuraInicialContenedores = basuraInicialContenedores;
 		this.cantidadContenedores = basuraInicialContenedores.length;
 		return this;
+	}
+
+	public float [][] getTiempo() {
+		return tiempo;
+	}
+
+	public float [] getTiempoToStartpoint() {
+		return tiempoToStartpoint;
+	}
+
+	public float [] getTiempoFromStartpoint() {
+		return tiempoFromStartpoint;
 	}
 
 }
