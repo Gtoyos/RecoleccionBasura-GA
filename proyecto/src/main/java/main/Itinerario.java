@@ -4,8 +4,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.uma.jmetal.util.binarySet.BinarySet;
 
+/**
+ * Extiende la implementación de la binary solution de JMetal para brindar información enriquecida y editar la solucion de forma más
+ * sencilla en el algoritmo.
+ * @author Toyos, Vallcorba
+ *
+ */
 public class Itinerario extends BinarySet{
 	private static final long serialVersionUID = 4335200616163764698L;
+	
 	private int cantCamiones,cantContenedores,cantDias;
 	
 	private double fitness=-1;
@@ -14,6 +21,13 @@ public class Itinerario extends BinarySet{
 	private long computingTime=-1;
 	private int hayDesborde = 0;
 	
+	/**\
+	 * Constructor por copia. 
+	 * @param cantCamiones: filas por matriz de la solución.
+	 * @param cantContenedores: columnas según la matriz de resolución.
+	 * @param cantDias: cantidad máxima de dias en las que se puede dejar un contenedor sin atender. 
+	 * @param b: Arreglo bibario a copiar.
+	 */
 	public Itinerario(BinarySet b,int cantCamiones, int cantContenedores, int cantDias) {
 		super(b.getBinarySetLength());
 		for(int i=0; i<b.getBinarySetLength();i++)
@@ -22,22 +36,50 @@ public class Itinerario extends BinarySet{
 		this.cantContenedores = cantContenedores;
 		this.cantDias = cantDias;
 	}
-	
+	/**\
+	 * Constructor. Retorna un arreglo de tamaño cantCamiones*cantContenedores*cantDias*2 
+	 * @param cantCamiones: filas por matriz de la solución.
+	 * @param cantContenedores: columnas según la matriz de resolución.
+	 * @param cantDias: cantidad máxima de dias en las que se puede dejar un contenedor sin atender. 
+	 */	
 	public Itinerario(int numberOfBits, int cantCamiones, int cantContenedores, int cantDias) {
 		super(numberOfBits);
 		this.cantCamiones = cantCamiones;
 		this.cantContenedores = cantContenedores;
 		this.cantDias = cantDias;
 	}
-
+	
+	/** Edita el valor en el itinerario para  el camión n, contenedor m el díá d para el turno matutino y nocturno.
+	 * @implNote se edita la posición: (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor
+	 * @param camion
+	 * @param contenedor
+	 * @param dia
+	 * @param turno
+	 * @param valor
+	 */
 	public void set(int camion, int contenedor, int dia, int turno, boolean valor) {
 		this.set( (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor, valor);
 	}
 	
+	/** Obtiene el valor en el itinerario para  el camión n, contenedor m el díá d para el turno matutino y nocturno.
+	 * @implNote se edita la posición: (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor
+	 * @param camion
+	 * @param contenedor
+	 * @param dia
+	 * @param turno
+	 * @param valor
+	 */
 	public int get(int camion, int contenedor, int dia, int turno) {
 		return this.get( (dia*2+turno)*cantCamiones*cantContenedores + cantContenedores*camion + contenedor) ? 1:0;
 	}
 	
+	/**
+	 * Devuelve los contenedores levantados por un camion en un dia y turno especificos
+	 * @param camion
+	 * @param dia
+	 * @param turno
+	 * @return arreglo de enteros indicando si el camión levantara algúmn contenedor de basura en este momento.
+	 */
 	public int[] getContenedores(int camion, int dia, int turno) {
 		int [] res = new int[cantContenedores];
 		for(int i=0; i<cantContenedores; i++) {
@@ -46,6 +88,13 @@ public class Itinerario extends BinarySet{
 		return res;
 	}
 
+	/**
+	 * Devuelve los contenedores levantados en el día
+	 * @param camion
+	 * @param dia
+	 * @param turno
+	 * @return arreglo de enteros indicando los contenedores que se levantaran en el dia
+	 */
 	public int[] getContenedoresLevantadosEnElDia(int dia) {
 		int [] res = new int[cantContenedores];
 		for(int cam=0; cam < cantCamiones; cam++)
@@ -74,6 +123,10 @@ public class Itinerario extends BinarySet{
 		return fitness;
 	}
 
+	/**
+	 * Imprime el itinerario.
+	 * 
+	 */
 	@Override
 	public String toString() {
 		String stream = "\n";
@@ -96,6 +149,10 @@ public class Itinerario extends BinarySet{
 		stream+="computo: "+computingTime+"\n";
 		return stream;
 	}
+	/**
+	 * Imprime la metadata del itinerario.
+	 * @return string que contiene la metadata del itinerario en formato key: val \n
+	 */
 	public String getResults() {
 		String stream = "";
 		stream+="fitness: "+fitness+"\n";
@@ -132,6 +189,9 @@ public class Itinerario extends BinarySet{
 		this.tiempo = tiempo;
 	}
 	
+	/**
+	 * Intercambia los contenedores que se levantan en el día por los que se levantan en el turno nocturno.
+	 */
 	public void switchTurnos() {
 		int tmp;
 		for(int d=0; d<cantDias; d++) {
@@ -143,6 +203,11 @@ public class Itinerario extends BinarySet{
 				}
 		}
 	}
+	
+	/**
+	 * Intercambia los turnos de un itinerario moviendolo entre los distitntos dias. No asegura que el itinerario
+	 * siga respetando los tiempos de recogida de los contenedores para evitar desborde.
+	 */
 	public void shuffleDiasTurnos() {
 		int tmp;
 		for(int t=0; t<2; t++) {

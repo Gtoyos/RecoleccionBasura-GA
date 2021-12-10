@@ -40,19 +40,30 @@ import com.graphhopper.jsprit.core.util.Coordinate;
 import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
-
+/**
+ * Modulo para obtener la distancia y tiempo de una ruta. Utiliza la librería Jsprit.
+ * La función prinucipal es solve(), para ejecutarla debe haberse ejecutado previamente buildTrucks() y buildCostMatrix().
+ * 
+ * @author Toyos,Vallcorba
+ *
+ */
 public class TSPSolver implements Serializable{
-
-	private static final int MAX_CACHE = 10000;
 	private static final long serialVersionUID = -5979648570893638696L;
+	/** Tamaño máximo del caché de soluciones. */
+	private static final int MAX_CACHE = 100000;
+	
 	public int CAPACIDAD_MAXIMA = 100; //Cantidad maxima de residuos que se pueden levantar.
 	public final int COSTO_POR_DISTANCIA = 1; //Costo por metro recorrido
 	public final float COSTO_POR_TIEMPO = 0;//00.001f; // Costo por segundo de transporte (En milisegundos)
 	public final int COSTO_FIJO = 0;//100; //Costo fijo por utilizar el camion
 	public final double MAX_TIME = 1000*60*60*24; //Cota maxima preventiva de 24hs.
+	
+	/** Tras llegar al contenedor, se permanece allí 3 minutos para poder levantarlo */
 	public final double TIEMPOXCONTENEDOR = 60*3*1000; //Tiempo que se permanece en cada contenedor (en ms).
+	
 	public transient final Location felipe_cardozo =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(-56.0982134,-34.8504341))
 			.setId("startpoint").build();
+	
 	private transient VehicleImpl camion;
 	private transient VehicleRoutingTransportCosts costMatrix;
 	private transient Location startpoint = felipe_cardozo;
@@ -80,19 +91,18 @@ public class TSPSolver implements Serializable{
 			sol = s;
 		}
 	}
-	
+	/** Cache de soluciones. Permite almacenar soluciones ya calculadas para devolverlas de forma inmediata */
 	private static Map<Integer,List<DtSol>> cache = new Hashtable<Integer,List<DtSol>>();
 
 	TSPSolver(){ }
 	
-    /**
-     * Calcula la ruta optima para levatar los contenedores 
-     * <p>Todas las matrices del problema deben estar cargadas antes de poder ejecutar esta función
-     * 
-     * @param plotResults true para imprimir los resultados
-     * @param indiceContenedores contiene los contenedores que se quieren levantar segun su posicion en la matriz positions
-     * @return retorna float[] donde la primer entrada es la distancia recorrida en metros del recorrido y la segunda entrada es el tiempo empleado para hacerlo
-     */
+
+	/**
+	 * Version alternativa de float con tiempo de ejecución e información adicional que se impormie en la salida estandar. 
+	 * @param indiceContenedores
+	 * @param plotResults
+	 * @return retorna float[] donde la primer entrada es la distancia recorrida en metros del recorrido y la segunda entrada es el tiempo empleado para hacerlo
+	 */
 	public float [] solveVerbose(int [] indiceContenedores,boolean plotResults){
     	System.out.print("TSPSolver::solve("+Arrays.toString(indiceContenedores)+")");
       	long startTime = System.nanoTime();
@@ -105,7 +115,14 @@ public class TSPSolver implements Serializable{
 		return solve(indiceContenedores,false);
 	}
 	
-	
+    /**
+     * Calcula la ruta optima para levatar los contenedores 
+     * <p>Todas las matrices del problema deben estar cargadas antes de poder ejecutar esta función. Es decir, deben ejecutarse
+     * las funciones buildCostMatrix() y buildTrucks() previamente. </p>
+     * @param plotResults true para imprimir los resultados
+     * @param indiceContenedores contiene los contenedores que se quieren levantar segun su posicion en la matriz positions
+     * @return retorna float[] donde la primer entrada es la distancia recorrida en metros del recorrido y la segunda entrada es el tiempo empleado para hacerlo
+     */	
 	public float [] solve(int [] indiceContenedores,boolean plotResults){
 		int sumi = Arrays.stream(indiceContenedores).sum();
 		int hash = Arrays.hashCode(indiceContenedores);
@@ -203,7 +220,7 @@ public class TSPSolver implements Serializable{
 	
 
 	/* Funcion de ejemplo para resolver un problema TSP básico. */
-	public static void simpleExample() {
+	private static void simpleExample() {
 		//Define el tipo de vehiculo
 		VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("camionDeBasura");
 		VehicleType camionDeBasura = vehicleTypeBuilder.build();
@@ -239,7 +256,10 @@ public class TSPSolver implements Serializable{
 	}
 	
 	
-	
+	/**
+	 * Construye la matriz de tiempo y de costos. Las cuales debieron de setearse previamente.
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */
 	public TSPSolver buildcostMatrix() {
         VehicleRoutingTransportCostsMatrix.Builder costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(false);
         for (int i=0; i<tiempo.length; i++)
@@ -258,6 +278,10 @@ public class TSPSolver implements Serializable{
 		return this;
 	}
 	
+	/**
+	 * Construye los camiones de basura con los parametros configurados.
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */
 	public TSPSolver buildTrucks() {
 		VehicleTypeImpl.Builder templateCamionDeBasura = VehicleTypeImpl.Builder.newInstance("camionDeBasuraA01")
 				.addCapacityDimension(0, CAPACIDAD_MAXIMA)
@@ -275,58 +299,113 @@ public class TSPSolver implements Serializable{
 		camion = fabricaCamiones.build();
 		return this;
 	}
-	
-	public static void main(String[] args) {
-		simpleExample();
-	}
 
+	/**
+	 * Setea la ubiciación de los contenedores.
+	 * @param positions: posición de los contenedores en el mapa
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */
 	public TSPSolver setPositions(float [][] positions) {
 		this.positions = positions;
 		return this;
 	}
+	
+	/**
+	 * Setea el costo de tiempo de viaje entre contenedores.
+	 * @param tiempo: costo de tiempo contenedor<->contenedor
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */
 	public TSPSolver setTiempo(float [][] tiempo) {
 		this.tiempo = tiempo;
 		return this;
 	}
+	
+	/**
+	 * Setea el costo de distancia de viaje entre contenedores.
+	 * @param distancia: costo de distancia contenedor<->contenedor
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */	
 	public TSPSolver setDistancia(float [][] distancia) {
 		this.distancia = distancia;
 		return this;
 	}
-
+	
+	/**
+	 * Setea la cantidad de contenedores que puede levantar un camión
+	 * @param  capMax: capacidad máxima de los camiones
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */	
 	public TSPSolver setCapacidadCamiones(int capMax) {
 		this.CAPACIDAD_MAXIMA = capMax;
 		return this;
 	}
+
+	/**
+	 * Setea el costo de tiempo de viaje entre contenedores y el basurero
+	 * @param tiempotoStartpoint: costo de tiempo de los contenedores al basurero
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */	
 	public TSPSolver setTiempotoStartpoint(float [] tiempotoStartpoint) {
 		this.tiempoToStartpoint = tiempotoStartpoint;
 		return this;
 	}
 
+	
+	/**
+	 * Setea el costo de tiempo de viaje entre el basurero y contenedores.
+	 * @param tiempoFromStartpoint: costo de tiempotiempo del basurero al contenedor
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */	
 	public TSPSolver setTiempoFromStartpoint(float [] tiempoFromStartpoint) {
 		this.tiempoFromStartpoint = tiempoFromStartpoint;
 		return this;
 	}
-
+	
+	/**
+	 * Setea el costo de distancia de viaje entre contenedores y el basurero
+	 * @param distanciatoStartpoint: costo de distancia de los contenedores al basurero
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */	
 	public TSPSolver setDistanciatoStartpoint(float [] distanciatoStartpoint) {
 		this.distanciaToStartpoint = distanciatoStartpoint;
 		return this;
 	}
-
+	
+	/**
+	 * Setea el costo de distancia de viaje entre el basurero y contenedores.
+	 * @param distanciaFromStartpoint: costo de distancia del basurero al contenedor
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */	
 	public TSPSolver setDistanciaFromStartpoint(float [] distanciaFromStartpoint) {
 		this.distanciaFromStartpoint = distanciaFromStartpoint;
 		return this;
 	}
 	
+	/**
+	 * Setea la ubicación del basurero
+	 * @param x: coordenada
+	 * @param y: coordenada
+	 * @return la instancia TSPSolver sobre la que se ejecutó la operación
+	 */
 	public TSPSolver setStartpoint(int x,int y) {
 		this.startpoint =  Location.Builder.newInstance().setCoordinate(Coordinate.newInstance(x,y))
 				.setId("startpoint").build();
 		return this;
 	}
 	
+	/**
+	 * Setea el tiempo maximo de ejecuciíón del algoritmo.
+	 * @param time: tiempo máximo
+	 * @returnla instancia TSPSolver sobre la que se ejecutó la operación
+	 */
 	public TSPSolver setTimeTermination(int time) {
 		this.timeTermination = new TimeTermination(time);
 		return this;
 	}
+	
+	/**
+	 * Setea la variación entre soluciones como criterio de parada del algoritmo
+	 */
 	public TSPSolver setCoefTermiantion(int iterations, float variance) {
 		this.coefTermination = new VariationCoefficientTermination(iterations, variance); 
 		return this;

@@ -11,8 +11,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Utilidades para cargar y leer archivos csv y convertirlos a matrices de float. 
+ * <p> Los arhivos csv necesariamente debe estar separados por , y no contener espacios
+ * entre los datos. </p>
+ * @author Toyos,Vallcorba
+ *
+ */
 public class MatrixLoader {
 
+	/**
+	 * Lee una matriz y la carga en un arreglo de floats
+	 * @param url: path del archivo a leer
+	 * @return arreglo 2d correspondiente a la matriz leída.
+	 * @throws IOException
+	 */
 	public static float[][] readCSV(String url) throws IOException{
 		List<Float[]> rowList = new ArrayList<Float[]>();
 		try (Stream<String> stream = Files.lines(Paths.get(url))) {
@@ -32,6 +45,12 @@ public class MatrixLoader {
 		}
 		return res;
 	}
+	
+	/**
+	 * Permite escribir un arreglo de floats en un archivo csv.
+	 * @param m: arreglo a persistir
+	 * @param fileName: nombre del archivo a crear
+	 */
 	public static void writeCSV(float[][] m,String fileName) {
 		PrintWriter pw = null;
         try {
@@ -84,7 +103,7 @@ public class MatrixLoader {
 	}
 	
 	//Testing 
-	public static void main(String[] args) {
+	private static void main(String[] args) {
 		try {
 			float[][] r =readCSV("data/ContenedoresGraphHopper/distancia.csv");
 			for(int i=0; i< r.length; i++)

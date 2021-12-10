@@ -33,7 +33,11 @@ import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
 import org.uma.jmetal.util.observer.impl.PrintObjectivesObserver;
 import org.uma.jmetal.util.termination.impl.TerminationByEvaluations;
 
-
+/**
+ * Construcción y ejecución del algoritmo evolutivo.
+ * @author Toyos, Vallcorba
+ *
+ */
 public class BasuraAlgorithm {
 	private String instanceFolder;
 	private int [] estadoInicial;
@@ -42,6 +46,7 @@ public class BasuraAlgorithm {
 			populationSize=100,
 			maxEvaluations=10000,
 			capacidadCamiones=200;
+
 	public static float mutationP=0.008f,crossoverP=0.95f;
 	
 	private BasuraProblem problem;
@@ -51,20 +56,18 @@ public class BasuraAlgorithm {
 		this.estadoInicial = estadoInicial;
 	}
 
-	
+	/**
+	 * Primera versión del algoritmo evolutivo.
+	 * @implNote Utiliza el algoritmo generico simple con un multithreaded list evaluator.
+	 * @deprecated
+	 * @return Itinerario solución.
+	 */
 	public Itinerario run() {
 	    problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
-	    
 	    CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(crossoverP);
 	    MutationOperator<BinarySolution> mutation = new BitFlipMutation(mutationP);
 	    SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<BinarySolution>();
 	    
-	    //SparkConf sparkConf = new SparkConf()
-	    //        .setMaster("local[6]") // 8 cores
-	    //        .setAppName("NSGA-II with Spark");
-	    //System.setProperty("hadoop.home.dir", "C:\\Program Files\\winutils");
-	    //JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
-	    //SolutionListEvaluator<BinarySolution> evaluator = new SparkSolutionListEvaluator<>(sparkContext);
 	    MultiThreadedSolutionListEvaluator<BinarySolution> evaluator =  new MultiThreadedSolutionListEvaluator<BinarySolution>(cores);
 	    
 	    GeneticAlgorithmBuilder<BinarySolution> builder =
@@ -79,12 +82,16 @@ public class BasuraAlgorithm {
 	    Algorithm<BinarySolution> algorithm = builder.build();	    
 	    algorithm.run();
 	    evaluator.shutdown();
-	    
-	    //AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
 	    return ((Itinerario) algorithm.getResult().variables().get(0));
 
 	}
-
+	
+	/**
+	 * Segunda versión del algoritmo evolutivo.
+	 * @implNote Utiliza un algoritmo MOCHC con un multithreaded list evaluator.
+	 * @deprecated
+	 * @return Itinerario solución.
+	 */
 	public Itinerario run2() {
 		problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
 	    CrossoverOperator<BinarySolution> crossoverOperator;
@@ -119,7 +126,13 @@ public class BasuraAlgorithm {
 	    		.setComp(computingTime);
 	    return best;
 	}
-	
+
+	/**
+	 * Versión final del agloritmo evolutivo. Utiliza un algoritmo paralelo asíncrono de tipo master/slave.
+	 * <p>Los operadores son: cruzamiento HUX (Half uniform corssover) y bit flip mutation.</p>
+	 * @implNote Las probabilidades a utilizar en el algoritmo fueron escogidas tras un estudio parametrico de performance para distitas combinaciones.
+	 * @return Itinerario solución.
+	 */
 	public Itinerario run3() {
 		problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
 
@@ -144,6 +157,10 @@ public class BasuraAlgorithm {
 	    return ((Itinerario) resultList.get(0).variables().get(0)).setComp(endTime-initTime);
 	}
 	
+	/**
+	 * Algorito greedy para obtener la solución del itinerario. Sigue la estrategia presentada en el artículo.
+	 * @return Itinerario ejecución
+	 */
 	public Itinerario runGreedy() {
 		problem = new BasuraProblem(instanceFolder, estadoInicial,cantidadCamiones,capacidadCamiones,cores);
 	    Greedy g = new Greedy();

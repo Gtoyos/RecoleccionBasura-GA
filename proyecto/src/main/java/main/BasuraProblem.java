@@ -22,6 +22,15 @@ import org.uma.jmetal.util.errorchecking.JMetalException;
 import com.graphhopper.jsprit.core.algorithm.termination.TimeTermination;
 import com.graphhopper.jsprit.core.algorithm.termination.VariationCoefficientTermination;
 
+/**
+ * Clase que extiende el AbstractBinaryProblem con los detalles del problema de la recolección de basura.
+ * 
+ * @implNote La función utiliza un thredpool para evaluar de forma paralela cada una de las rutas 
+ * de los itinerarios utilizando TSPSolver. Si existe algun problema en la creación del thread se procede a la
+ * utilización de una operación alternativa que es secuencial.
+ * @author Toyos, Vallcorba
+ *
+ */
 @SuppressWarnings("serial")
 public class BasuraProblem extends AbstractBinaryProblem {
 
@@ -37,8 +46,16 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	private int factorTurnoDiurno=2; //Es 2 veces mas costoso recorrer la ciudad de dia que denoche.
 	private double tiempoMaximo=60*60*8*1000; //Tiempo maximo de cada recorrido (en ms).
 	private int factorTiempo= 1000*60*60; //Exederse 1h tiene el mismo costo que dejar un contenedor desbordado 1 dia.
+	
 	private int factorbase=100000; //Costobase
-	/** Constructor */
+	/**
+	 * Constructor. 
+	 * @param pathToInstanceFolder: carpeta con los archivos de la instancia. 
+	 * @param estadoInicialContenedores: estado inicial de los contenedores con los dias desde que fue levantado por ultima vez
+	 * @param cantidadCamiones: cantidad máxima de camiones
+	 * @param capacidadCamiones: capacidad máxima de los camiones
+	 * @param nucleos: tamaño del pool de nucleos para la función de evaluación.
+	 */
 	public BasuraProblem(String pathToInstanceFolder, int [] estadoInicialContenedores, int cantidadCamiones, int capacidadCamiones,int cores) {
 	    setNumberOfVariables(1);
 	    setNumberOfObjectives(1);
@@ -107,18 +124,20 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	public List<Integer> getListOfBitsPerVariable() {
 		return new ArrayList<Integer>(Arrays.asList(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2));
 	}
-
+	
+	static volatile int cc=0;
+	boolean primera_vez = true;
 	/**
 	 * Crea una solución posible. Una solución consiste de un itinerario con los contenedores que levantará cada camión
 	 * en cada turno de cada día. La solución está representada como un conjunto de matrices para cada turno de cada dia. Donde las
 	 * filas son cada camión y las columnas los contenedores. Una entrada 1 en la fila i columna j indica que el camión i levantará
 	 * el contenedor j para el turno y día que representa dicha matriz.
 	 * 
+	 * Para crear la solucion se escoge una estrategia de forma aleatoria. Las estrategias a utilizar son: Generación por algoritmo Greedy, generación con Greedy
+	 * más shuffle de turnos y generación aleatoria.
+	 * @implNot Las estrategias se escogen con probabilidad 0.33,0.33 y 0.66 respectivamente. 
 	 * @return Retorna la matriz codificada como una BinarySolution.
 	 */
-	
-	static volatile int cc=0;
-	boolean primera_vez = true;
 	@Override
 	public BinarySolution createSolution() {
 		BinarySolution x = new DefaultBinarySolution(getListOfBitsPerVariable(), getNumberOfObjectives());
@@ -157,12 +176,11 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	
 	
 	/**
-	 * Calcula el fitness de la solución. El fitness se calcula en base a las restricciones de capacidades, distancia  y tiempo del itinerario
+	 * Calcula el fitness de la solución. El fitness se calcula en base a las restricciones de capacidades, distancia  y tiempo del itinerario.
 	 * 
 	 * @param solution solución a evaluar.
 	 * @return solución evaluada.
 	 */
-	
 	@Override
 	public BinarySolution evaluate(BinarySolution solution) {
 		class TSPRunner implements Callable<float []> {
@@ -299,6 +317,13 @@ public class BasuraProblem extends AbstractBinaryProblem {
 		return desbordados;
 	}
 
+	/**
+	 * Operador de reparación. Modifica un itinerario que no respeta el tiempo máximo o capacidades para que sea una solucion
+	 * factible del problema.
+	 * @implNote La reparación se realiza de forma aleatoria para preservar ala diversidad. Es decir, no necesariamente reparar(r)=reparar(r) para dos ejecuciones distintas de reparar().
+	 * @param r: Itinerario a reparar
+	 * @return Itinerario que respeta las capacidades de los camiones y el tiempo máximo de estos.
+	 */
 	private Itinerario reparar(Itinerario r) {
 		class DtHorario{
 			int camion,dia,turno;
@@ -369,12 +394,18 @@ public class BasuraProblem extends AbstractBinaryProblem {
 	}
 	
 
+	/**
+	 * Calcula la distancia máxima entre dos contenedores. Se utiliza para obtener una cota superior del fitness.
+	 * @param distancia: arreglo con las distancias de los contenedores
+	 * @return la distancia máxima entre dos contenedores
+	 */
 	private double getDistanciaMaxima(float[][] distancia) {
 		double max=-1;
 		for(int i=0; i< distancia.length; i++)
 			for(int j=0; j<distancia[i].length; j++)
 				if(distancia[i][j]>max)
 					max = distancia[i][j];
+		System.out.print(max*this.capacidadCamiones*this.cantidadCamiones*this.diasMaxSinLevantar*2 + " ||");
 		return max*this.capacidadCamiones*this.cantidadCamiones*this.diasMaxSinLevantar*2;
 		
 	}

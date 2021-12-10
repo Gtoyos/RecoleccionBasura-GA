@@ -8,6 +8,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Modulo de ejecución del algoritmo greedy presentado en el articulo.
+ * Antes de ejecutar el greedy deben cargarse la ubicación de los contenedores
+ * y las matrices de distancia/tiempo utilizando sus respectivos getters.
+ * @author Toyos, Vallcorba
+ *
+ */
 public class Greedy {
 	
 	private final static int diasMaxSinLevantar = 2;
@@ -32,7 +39,13 @@ public class Greedy {
 	private float [] distanciaToStartpoint;
 	private float [] distanciaFromStartpoint;
 	
-	
+    /**
+     * Calcula un itinerario utilizando el algoritmo greedy presentado en el articulo
+     * <p>Todas las matrices del problema deben estar cargadas antes de poder ejecutar esta función. Es decir, deben ejecutarse
+     * los getters respectivos para cargar las matrices. </p>
+     * @param contIni: primer contenedor al cual el camion viajará desde el basurero. Si contIni=-1, se tomará como primer destino el contenedor más cercano al basurero.
+     * @return retorna float[] donde la primer entrada es la distancia recorrida en metros del recorrido y la segunda entrada es el tiempo empleado para hacerlo
+     */	
 	public Itinerario solve(int contIni) { 	
 		Itinerario iti = new Itinerario(cantidadCamiones*cantidadContenedores*diasMaxSinLevantar*2, cantidadCamiones, cantidadContenedores, diasMaxSinLevantar);
 		float distanciaRecorrida = 0;

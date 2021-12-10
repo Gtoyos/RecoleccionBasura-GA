@@ -11,14 +11,26 @@ import org.uma.jmetal.util.JMetalLogger;
 
 
 
-
+/**
+ * Modulo principal de ejecucción. Realiza los pasos necesarios para poder ejecutar el algoritmo.
+ * @author Toyos, Vallcorba
+ *
+ */
 public class Main {
 	
-	//Parametros de ejecucion del algoritmo por defecto
+	/** Tamaño de la población. (150 por defectom, corresponde al ajuste paramétrico) */
 	static int popsize = 150; //Resultado ajuste paramétrico.
+	/** Cantidad de evaluaciones como criterio de parada (100000 por defecto) */
 	static int maxEval = 100000;
+	/** Cantidad de núcleos a utilizar (8 por defecto) */
 	static int cores = 8;
 
+	/**
+	 * Función principal. Espera como argumentos, de forma opcional: cantidadDeEvaluaciones, cores, tipoDeEjecucción, inst, etc.
+	 * El tipo de ejecucción si no se especifica es el normal. Si vale exp, si ejecuta la evaluación expermiental, si vale greedy se ejecuta 
+	 * unicamente el algoritmo greedy y se devuelve su resultado.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		if(args.length>0)
 			maxEval = Integer.valueOf(args[0]);
@@ -43,7 +55,10 @@ public class Main {
 		System.exit(0);
 	}
 
-	public static void Greedylauncher() {
+	/**
+	 * Launcher del algoritmo voraz.
+	 */
+	private static void Greedylauncher() {
 		String pathToInstanceFolder = "instance";
 		float [] c0f = null;
 		float [] param = null;
@@ -79,7 +94,11 @@ public class Main {
 		}
 	}
 
-	public static void AnalisisExperimentalUnico(int instance) {
+	/**
+	 * Realiza las pruebas expermientales para una unica instancia del problema.
+	 * @param instance
+	 */
+	private static void AnalisisExperimentalUnico(int instance) {
 		
 		Path file1 = Paths.get("results/inst1.txt");
 		Path file2 = Paths.get("results/inst2.txt");
@@ -221,7 +240,8 @@ public class Main {
 					}
 		System.exit(0);
 	}
-
+	
+	/** Prueba expermiental completa para cada instancia*/
 	public static void AnalisisExperimental() {
 		
 		Path file1 = Paths.get("results/inst1.txt");
@@ -332,6 +352,7 @@ public class Main {
 					}
 	}
 
+	/** Imprime el resultado del itinerario como una unica linea */
 	private static String resultOneLiner(Itinerario r) {
 		String stream="";
 		String [] p=r.getResults().split("\n");
@@ -342,6 +363,7 @@ public class Main {
 		return stream;
 	}
 	
+	/** Ejecución clásica del algoritmo */
 	public static void Algorithmlauncher() {
 		String pathToInstanceFolder = "instance";
 		float [] c0f = null;
