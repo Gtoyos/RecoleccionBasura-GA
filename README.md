@@ -2,7 +2,7 @@
 
 ## Instalación
 
-Se utiliza la herramienta de gestión de proyectos Apache Maven la Instalación de dependencias. Para instalar el proyecto basta con ejecutar
+Se utiliza la herramienta de gestión de proyectos Apache Maven para la Instalación de dependencias y compilación del proyecto. Para instalar el proyecto basta con ejecutar
 el script [compile.sh](compile.sh) el cual generará un .jar portable en el directorio de trabajao.
 
 ## Uso
