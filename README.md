@@ -7,7 +7,7 @@ el script [compile.sh](compile.sh) el cual generará un .jar portable en el dire
 
 ## Uso
 
-Se encuentra un ejemplo para ejecutarlo en el archivo [run.sh](run.sh). Los argumentos que el archivo opcionalmente espera son:
+Se encuentra un ejemplo para ejecutarlo en el archivo [exe.sh](exe.sh). Los argumentos que el archivo opcionalmente espera son:
 
     Cantidad máxima de evaluaciones | Nucleos de CPU | Modo
 
